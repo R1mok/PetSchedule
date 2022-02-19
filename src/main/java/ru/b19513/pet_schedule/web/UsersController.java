@@ -1,10 +1,9 @@
 package ru.b19513.pet_schedule.web;
 
+import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static ru.b19513.pet_schedule.consts.Consts.NOT_IMPLEMENTED;
 
@@ -12,8 +11,21 @@ import static ru.b19513.pet_schedule.consts.Consts.NOT_IMPLEMENTED;
 @RequestMapping("/users")
 public class UsersController {
 
+    @ApiOperation(value = "Регистрация нового пользователя")
     @PostMapping("/register")
     public ResponseEntity<String> register() {
+        return new ResponseEntity<>(NOT_IMPLEMENTED, HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    @ApiOperation(value = "Изменение данных пользователя по id")
+    @PutMapping("/{userId}}")
+    public ResponseEntity<String> updateUser(@PathVariable String userId) {
+        return new ResponseEntity<>(NOT_IMPLEMENTED, HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    @ApiOperation(value = "Получение данных пользователя по id")
+    @GetMapping("/{userId}}")
+    public ResponseEntity<String> getUser(@PathVariable String userId) {
         return new ResponseEntity<>(NOT_IMPLEMENTED, HttpStatus.NOT_IMPLEMENTED);
     }
 }
