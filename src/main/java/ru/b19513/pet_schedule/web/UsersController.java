@@ -18,13 +18,13 @@ public class UsersController {
     }
 
     @ApiOperation(value = "Изменение данных пользователя по id")
-    @PutMapping("/{userId}}")
+    @PutMapping("/{userId}")
     public ResponseEntity<String> updateUser(@PathVariable String userId) {
         return new ResponseEntity<>(NOT_IMPLEMENTED, HttpStatus.NOT_IMPLEMENTED);
     }
 
     @ApiOperation(value = "Получение данных пользователя по id")
-    @GetMapping("/{userId}}")
+    @GetMapping("/{userId}")
     public ResponseEntity<String> getUser(@PathVariable String userId) {
         return new ResponseEntity<>(NOT_IMPLEMENTED, HttpStatus.NOT_IMPLEMENTED);
     }
