@@ -37,7 +37,7 @@ public class GroupsController {
     }
 
     @ApiOperation(value = "Удаление группы и всех связанных с ней записей")
-    @PutMapping("/{groupId}")
+    @DeleteMapping("/{groupId}")
     public ResponseEntity<String> delete(@PathVariable String groupId) {
         return new ResponseEntity<>(NOT_IMPLEMENTED, HttpStatus.NOT_IMPLEMENTED);
     }
