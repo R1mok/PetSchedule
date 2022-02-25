@@ -1,4 +1,4 @@
-package ru.b19513.pet_schedule.web;
+package ru.b19513.pet_schedule.controller;
 
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
