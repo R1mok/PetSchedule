@@ -1,7 +1,6 @@
 package ru.b19513.pet_schedule.repository.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import ru.b19513.pet_schedule.repository.entity.enums.Gender;
 import ru.b19513.pet_schedule.repository.entity.enums.PetType;
@@ -11,6 +10,9 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "T_PET")
 public class Pet {
     @Id

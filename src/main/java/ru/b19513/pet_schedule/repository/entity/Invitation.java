@@ -1,7 +1,6 @@
 package ru.b19513.pet_schedule.repository.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.NaturalId;
 
@@ -10,6 +9,9 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "t_invitation")
 public class Invitation {
     @Id
