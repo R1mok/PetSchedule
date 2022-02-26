@@ -34,6 +34,7 @@ public class NotificationController {
     public ResponseEntity<String> updateNotification(@PathVariable String notifId) {
         return new ResponseEntity<>(NOT_IMPLEMENTED, HttpStatus.NOT_IMPLEMENTED);
     }
+
     @ApiOperation(value = "Удалить напоминание по id")
     @DeleteMapping("/{notifId}")
     public ResponseEntity<String> deleteNotification(@PathVariable String notifId) {

@@ -1,17 +1,18 @@
 package ru.b19513.pet_schedule.repository.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import ru.b19513.pet_schedule.repository.entity.enums.Gender;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Set;
 
 @Entity
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "T_USER")
 public class User {
     @Id
