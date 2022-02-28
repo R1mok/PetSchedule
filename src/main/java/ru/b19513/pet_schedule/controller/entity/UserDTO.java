@@ -24,5 +24,5 @@ public class UserDTO implements Serializable {
     @Schema(description = "Пол пользователя")
     private Gender gender;
     @Schema(description = "Приглашения пользователя в группы")
-    private List<Invitation> invitations;
+    private List<InvitationDTO> invitations;
 }

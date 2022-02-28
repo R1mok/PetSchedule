@@ -20,7 +20,7 @@ public class GroupDTO implements Serializable {
     @Schema(description = "Описание группы")
     private String description;
     @Schema(description = "Список пользователей группы")
-    private List<User> users;
+    private List<UserDTO> users;
     @Schema(description = "Список питомцев группы")
-    private List<Pet> pets;
+    private List<PetDTO> pets;
 }
