@@ -13,13 +13,13 @@ import java.io.Serializable;
 @Schema(description = "Питомец")
 public class PetDTO implements Serializable {
     @Schema(description = "ID питомца")
-    private final long id;
+    private long id;
     @Schema(description = "Имя питомца")
-    private final String name;
+    private String name;
     @Schema(description = "Описание питомца")
-    private final String description;
+    private String description;
     @Schema(description = "Вид питомца")
-    private final PetType type;
+    private PetType type;
     @Schema(description = "Пол питомца")
-    private final Gender gender;
+    private Gender gender;
 }

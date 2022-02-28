@@ -14,11 +14,11 @@ import java.time.LocalDateTime;
 @Schema(description = "Запись о кормлении")
 public class FeedNoteDTO implements Serializable {
     @Schema(description = "Питомец")
-    private final Pet pet;
+    private Pet pet;
     @Schema(description = "Пользователь, который оставил запись")
-    private final User user;
+    private User user;
     @Schema(description = "Время публикации записи")
-    private final LocalDateTime dateTime;
+    private LocalDateTime dateTime;
     @Schema(description = "Дополнительная информация от пользователя")
-    private final String comment;
+    private String comment;
 }

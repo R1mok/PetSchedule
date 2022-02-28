@@ -14,13 +14,13 @@ import java.util.List;
 @Schema(description = "Группа")
 public class GroupDTO implements Serializable {
     @Schema(description = "ID группы")
-    private final long id;
+    private long id;
     @Schema(description = "Название группы")
-    private final String name;
+    private String name;
     @Schema(description = "Описание группы")
-    private final String description;
+    private String description;
     @Schema(description = "Список пользователей группы")
-    private final List<User> users;
+    private List<User> users;
     @Schema(description = "Список питомцев группы")
-    private final List<Pet> pets;
+    private List<Pet> pets;
 }

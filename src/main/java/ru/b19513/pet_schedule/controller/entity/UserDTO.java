@@ -14,15 +14,15 @@ import java.util.List;
 @Schema(description = "Класс пользователя")
 public class UserDTO implements Serializable {
     @Schema(description = "ID пользователя")
-    private final long id;
+    private long id;
     @Schema(description = "Логин пользователя")
-    private final String login;
+    private String login;
     @Schema(description = "Имя пользователя")
-    private final String name;
+    private String name;
     @Schema(description = "Описание пользователя")
-    private final String about;
+    private String about;
     @Schema(description = "Пол пользователя")
-    private final Gender gender;
+    private Gender gender;
     @Schema(description = "Приглашения пользователя в группы")
-    private final List<Invitation> invitations;
+    private List<Invitation> invitations;
 }

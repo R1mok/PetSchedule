@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Schema(description = "Приглашение пользователя в группу")
 public class InvitationDTO implements Serializable {
     @Schema(description = "Пользователь, которого нужно пригласить в группу")
-    private final User user;
+    private User user;
     @Schema(description = "Группа, в которую приглашается пользователь")
-    private final Group group;
+    private Group group;
 }
