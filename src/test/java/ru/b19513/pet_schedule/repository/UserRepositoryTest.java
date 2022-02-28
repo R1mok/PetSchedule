@@ -19,12 +19,14 @@ class UserRepositoryTest {
     @Test
     void testRepo() {
         val U1 = User.builder()
-                .name("Jawa")
+                .login("Jawa")
+                .name("Джава")
                 .gender(Gender.MALE)
                 .passwordHash(42)
                 .about("Поделил на ноль")
                 .build();
         val U2 = User.builder()
+                .login("vantuz")
                 .name("Иванесса")
                 .gender(Gender.FEMALE)
                 .passwordHash(43)
