@@ -1,10 +1,9 @@
 package ru.b19513.pet_schedule.controller.entity.enums;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@AllArgsConstructor
+
 @Getter
 @Schema(description = "Вид питомца")
 public enum PetType {
@@ -14,4 +13,9 @@ public enum PetType {
     final private String name;
     @Schema(description = "Описание вида питомца")
     final private String description;
+
+    PetType(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
 }
