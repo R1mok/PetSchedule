@@ -2,6 +2,7 @@ package ru.b19513.pet_schedule.repository.entity;
 
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.NaturalId;
 import ru.b19513.pet_schedule.repository.entity.enums.Gender;
 
 import javax.persistence.*;
@@ -19,6 +20,10 @@ public class User {
     @GenericGenerator(name = "generator", strategy = "increment")
     @GeneratedValue(generator = "generator")
     private long id;
+
+    @NaturalId
+    @Column(nullable = false)
+    private String login;
 
     @Column(nullable = false)
     private String name;
