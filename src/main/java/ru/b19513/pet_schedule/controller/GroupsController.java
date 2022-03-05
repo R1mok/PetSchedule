@@ -1,9 +1,13 @@
 package ru.b19513.pet_schedule.controller;
 
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.b19513.pet_schedule.controller.entity.GroupDTO;
+import ru.b19513.pet_schedule.controller.entity.StatusDTO;
+import ru.b19513.pet_schedule.service.GroupService;
 
 import static ru.b19513.pet_schedule.consts.Consts.NOT_IMPLEMENTED;
 
@@ -11,34 +15,43 @@ import static ru.b19513.pet_schedule.consts.Consts.NOT_IMPLEMENTED;
 @RequestMapping("/groups")
 public class GroupsController {
 
-
+    private final GroupService groupService;
+    @Autowired
+    public GroupsController(GroupService groupService) {
+        this.groupService = groupService;
+    }
     @ApiOperation(value = "Создание новой группы")
-    @PostMapping("/")
-    public ResponseEntity<String> create() {
-        return new ResponseEntity<>(NOT_IMPLEMENTED, HttpStatus.NOT_IMPLEMENTED);
+    @PostMapping("/{userId}{name}")
+    public ResponseEntity<GroupDTO> create(@PathVariable long userId, @PathVariable String name) {
+        GroupDTO groupDTO = groupService.createGroup(userId, name);
+        return new ResponseEntity<>(groupDTO, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Обновление данных группы")
-    @PutMapping("/{groupId}")
-    public ResponseEntity<String> update(@PathVariable String groupId) {
-        return new ResponseEntity<>(NOT_IMPLEMENTED, HttpStatus.NOT_IMPLEMENTED);
+    @PutMapping("/")
+    public ResponseEntity<GroupDTO> update(@RequestParam GroupDTO group) {
+        GroupDTO groupDTO = groupService.updateGroup(group);
+        return new ResponseEntity<>(groupDTO, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Приглашение в группу")
     @PostMapping("/{groupId}/members/{userId}")
-    public ResponseEntity<String> invite(@PathVariable String groupId, @PathVariable String userId) {
-        return new ResponseEntity<>(NOT_IMPLEMENTED, HttpStatus.NOT_IMPLEMENTED);
+    public ResponseEntity<StatusDTO> invite(@PathVariable long groupId, @PathVariable long userId) {
+        StatusDTO statusDTO = groupService.inviteUser(groupId, userId);
+        return new ResponseEntity<>(statusDTO, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Исключение из группы")
     @DeleteMapping("/{groupId}/members/{userId}")
-    public ResponseEntity<String> leave(@PathVariable String groupId, @PathVariable String userId) {
-        return new ResponseEntity<>(NOT_IMPLEMENTED, HttpStatus.NOT_IMPLEMENTED);
+    public ResponseEntity<StatusDTO> leave(@PathVariable long groupId, @PathVariable long userId) {
+        StatusDTO statusDTO = groupService.kickUser(groupId, userId);
+        return new ResponseEntity<>(statusDTO, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Удаление группы и всех связанных с ней записей")
-    @DeleteMapping("/{groupId}")
-    public ResponseEntity<String> delete(@PathVariable String groupId) {
-        return new ResponseEntity<>(NOT_IMPLEMENTED, HttpStatus.NOT_IMPLEMENTED);
+    @DeleteMapping("/{groupId}{ownerId}")
+    public ResponseEntity<StatusDTO> delete(@PathVariable long groupId, @PathVariable long ownerId) {
+        StatusDTO statusDTO = groupService.deleteGroup(groupId, ownerId);
+        return new ResponseEntity<>(statusDTO, HttpStatus.OK);
     }
 }
