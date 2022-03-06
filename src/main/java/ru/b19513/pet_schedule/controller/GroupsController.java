@@ -9,8 +9,6 @@ import ru.b19513.pet_schedule.controller.entity.GroupDTO;
 import ru.b19513.pet_schedule.controller.entity.StatusDTO;
 import ru.b19513.pet_schedule.service.GroupService;
 
-import static ru.b19513.pet_schedule.consts.Consts.NOT_IMPLEMENTED;
-
 @RestController
 @RequestMapping("/groups")
 public class GroupsController {
@@ -20,6 +18,7 @@ public class GroupsController {
     public GroupsController(GroupService groupService) {
         this.groupService = groupService;
     }
+
     @ApiOperation(value = "Создание новой группы")
     @PostMapping("/{userId}{name}")
     public ResponseEntity<GroupDTO> create(@PathVariable long userId, @PathVariable String name) {
