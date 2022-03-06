@@ -20,8 +20,8 @@ public class GroupsController {
     }
 
     @ApiOperation(value = "Создание новой группы")
-    @PostMapping("/{userId}{name}")
-    public ResponseEntity<GroupDTO> create(@PathVariable long userId, @PathVariable String name) {
+    @PostMapping("/")
+    public ResponseEntity<GroupDTO> create(@RequestParam long userId, @RequestParam String name) {
         GroupDTO groupDTO = groupService.createGroup(userId, name);
         return new ResponseEntity<>(groupDTO, HttpStatus.OK);
     }
@@ -48,8 +48,8 @@ public class GroupsController {
     }
 
     @ApiOperation(value = "Удаление группы и всех связанных с ней записей")
-    @DeleteMapping("/{groupId}{ownerId}")
-    public ResponseEntity<StatusDTO> delete(@PathVariable long groupId, @PathVariable long ownerId) {
+    @DeleteMapping("/")
+    public ResponseEntity<StatusDTO> delete(@RequestParam long groupId, @RequestParam long ownerId) {
         StatusDTO statusDTO = groupService.deleteGroup(groupId, ownerId);
         return new ResponseEntity<>(statusDTO, HttpStatus.OK);
     }

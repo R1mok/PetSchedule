@@ -23,9 +23,9 @@ public class UsersController {
     public UsersController(UserService userService) {
         this.userService = userService;
     }
-    @ApiOperation(value = "Регистрация нового пользователя (логин, пароль, имя)")
-    @PostMapping("/register/{login}{pass}{name}")
-    public ResponseEntity<UserDTO> register(@PathVariable String login,@PathVariable String pass,@PathVariable String name) {
+    @ApiOperation(value = "Регистрация нового пользователя")
+    @PostMapping("/register/")
+    public ResponseEntity<UserDTO> register(@RequestParam String login,@RequestParam String pass,@RequestParam String name) {
         UserDTO userDTO = userService.signInNewUser(login, pass, name);
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
@@ -44,8 +44,8 @@ public class UsersController {
     }
 
     @ApiOperation(value = "Принять приглашение")
-    @PutMapping("/{userId}{groupId}")
-    public ResponseEntity<GroupDTO> acceptInvitation(@PathVariable long userId, @PathVariable long groupId) {
+    @PutMapping("/")
+    public ResponseEntity<GroupDTO> acceptInvitation(@RequestParam long userId, @RequestParam long groupId) {
         GroupDTO groupDTO = userService.acceptInvintation(userId, groupId);
         return new ResponseEntity<>(groupDTO, HttpStatus.OK);
     }

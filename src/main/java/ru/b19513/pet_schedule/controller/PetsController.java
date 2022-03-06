@@ -26,9 +26,10 @@ public class PetsController {
     }
 
     @ApiOperation(value = "Добавить нового питомца")
-    @PostMapping("/{groupId}{name}{description}{gender}{petType}")
-    public ResponseEntity<PetDTO> createPet(@PathVariable long groupId, @PathVariable String name, @PathVariable String description,
-                                            @PathVariable Gender gender, @PathVariable PetType petType) {
+    @PostMapping("/")
+    public ResponseEntity<PetDTO> createPet(@RequestParam long groupId, @RequestParam String name,
+                                            @RequestParam String description,
+                                            @RequestParam Gender gender, @RequestParam PetType petType) {
         PetDTO petDTO = petService.createPet(groupId, name, description, gender, petType);
         return new ResponseEntity<>(petDTO, HttpStatus.OK);
     }
@@ -55,8 +56,10 @@ public class PetsController {
     }
 
     @ApiOperation(value = "Создать запись о кормлении")
-    @PostMapping("/{petId}{userId}{comment}")
-    public ResponseEntity<FeedNoteDTO> createFeedNote (@PathVariable long petId, @PathVariable long userId, @PathVariable String comment){
+    @PostMapping("/")
+    public ResponseEntity<FeedNoteDTO> createFeedNote (@RequestParam long petId,
+                                                       @RequestParam long userId,
+                                                       @RequestParam String comment){
         FeedNoteDTO feedNoteDTO = petService.createFeedNote(petId, userId, comment);
         return new ResponseEntity<>(feedNoteDTO, HttpStatus.OK);
     }
@@ -69,8 +72,10 @@ public class PetsController {
     }
 
     @ApiOperation(value = "Найти записи о кормежках по времени и дате")
-    @GetMapping("/{petId}{from}{to}")
-    public ResponseEntity<Collection<FeedNoteDTO>> findFeedNotesByDate (@PathVariable long petId, @PathVariable LocalDateTime from, @PathVariable LocalDateTime to){
+    @GetMapping("/")
+    public ResponseEntity<Collection<FeedNoteDTO>> findFeedNotesByDate (@RequestParam long petId,
+                                                                        @RequestParam LocalDateTime from,
+                                                                        @RequestParam LocalDateTime to){
         Collection<FeedNoteDTO> feedNoteDTOCollection = petService.findFeedNotesByDate(petId, from, to);
         return new ResponseEntity<>(feedNoteDTOCollection, HttpStatus.OK);
     }
