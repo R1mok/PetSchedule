@@ -16,4 +16,6 @@ public interface UserService {
     GroupDTO acceptInvintation(long userId, long groupId);
 
     boolean isLoginFree(String login);
+
+    UserDTO getUser(long id);
 }

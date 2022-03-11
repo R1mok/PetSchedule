@@ -6,4 +6,5 @@ import ru.b19513.pet_schedule.repository.entity.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+    boolean existsByLogin(String login);
 }
