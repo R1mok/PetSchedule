@@ -1,9 +1,11 @@
 package ru.b19513.pet_schedule.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.b19513.pet_schedule.controller.entity.GroupDTO;
 import ru.b19513.pet_schedule.controller.entity.InvitationDTO;
+import ru.b19513.pet_schedule.controller.entity.StatusDTO;
 import ru.b19513.pet_schedule.controller.entity.UserDTO;
 import ru.b19513.pet_schedule.exceptions.LoginBusyException;
 import ru.b19513.pet_schedule.exceptions.NotFoundException;
@@ -90,8 +92,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean isLoginFree(String login) {
-        return userRepository.existsByLogin(login);
+    public StatusDTO isLoginFree(String login) {
+        return StatusDTO.builder()
+                .status(HttpStatus.OK)
+                .description(userRepository.existsByLogin(login) ? "true" : "false")
+                .build();
     }
 
     @Override
