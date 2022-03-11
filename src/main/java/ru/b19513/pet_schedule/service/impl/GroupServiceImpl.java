@@ -16,12 +16,12 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public StatusDTO inviteUser(long groupId, long userId) {
+    public GroupDTO inviteUser(long groupId, long userId) {
         return null;
     }
 
     @Override
-    public StatusDTO kickUser(long groupId, long userId) {
+    public GroupDTO kickUser(long groupId, long userId) {
         return null;
     }
 

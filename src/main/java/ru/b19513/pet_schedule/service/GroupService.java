@@ -9,9 +9,9 @@ public interface GroupService {
 
     GroupDTO updateGroup(GroupDTO group);
 
-    StatusDTO inviteUser(long groupId, long userId);
+    GroupDTO inviteUser(long groupId, long userId);
 
-    StatusDTO kickUser(long groupId, long userId);
+    GroupDTO kickUser(long groupId, long userId);
 
     StatusDTO deleteGroup(long groupId, long ownerId);
 }
