@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import ru.b19513.pet_schedule.repository.entity.Invitation;
 
 @Repository
-public interface InvitationRepository extends JpaRepository<Invitation, Long> {
+public interface InvitationRepository extends JpaRepository<Invitation, Invitation.Key> {
 }

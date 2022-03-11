@@ -32,7 +32,7 @@ public class User {
     private String about;
 
     @Column
-    private long passwordHash;
+    private byte[] passwordHash;
 
     @Column
     @ManyToMany(mappedBy = "users")
