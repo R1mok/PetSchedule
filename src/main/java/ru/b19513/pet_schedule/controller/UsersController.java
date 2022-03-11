@@ -30,7 +30,7 @@ public class UsersController {
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
     @ApiOperation(value = "Изменение данных пользователя")
-    @PutMapping("/")
+    @PatchMapping("/")
     public ResponseEntity<UserDTO> updateUser(@RequestParam UserDTO user) {
         UserDTO userDTO = userService.updateUser(user);
         return new ResponseEntity<>(userDTO, HttpStatus.OK);

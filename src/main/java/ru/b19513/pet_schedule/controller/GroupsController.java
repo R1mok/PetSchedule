@@ -27,7 +27,7 @@ public class GroupsController {
     }
 
     @ApiOperation(value = "Обновление данных группы")
-    @PutMapping("/")
+    @PatchMapping("/")
     public ResponseEntity<GroupDTO> update(@RequestParam GroupDTO group) {
         GroupDTO groupDTO = groupService.updateGroup(group);
         return new ResponseEntity<>(groupDTO, HttpStatus.OK);

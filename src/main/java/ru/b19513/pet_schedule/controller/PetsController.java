@@ -35,7 +35,7 @@ public class PetsController {
     }
 
     @ApiOperation(value = "Обновить сведения о питомце")
-    @PutMapping("/")
+    @PatchMapping("/")
     public ResponseEntity<PetDTO> updatePet(@RequestParam PetDTO petDTOInput) {
         PetDTO petDTO = petService.updatePet(petDTOInput);
         return new ResponseEntity<>(petDTO, HttpStatus.OK);
