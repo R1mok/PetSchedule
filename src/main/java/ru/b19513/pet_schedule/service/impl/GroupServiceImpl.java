@@ -16,7 +16,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public GroupDTO inviteUser(long groupId, long userId) {
+    public StatusDTO inviteUser(long groupId, long userId) {
         return null;
     }
 

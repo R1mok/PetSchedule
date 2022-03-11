@@ -9,7 +9,7 @@ public interface GroupService {
 
     GroupDTO updateGroup(GroupDTO group);
 
-    GroupDTO inviteUser(long groupId, long userId);
+    StatusDTO inviteUser(long groupId, long userId);
 
     GroupDTO kickUser(long groupId, long userId);
 
