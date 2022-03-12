@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.b19513.pet_schedule.controller.entity.GroupDTO;
 import ru.b19513.pet_schedule.controller.entity.InvitationDTO;
+import ru.b19513.pet_schedule.controller.entity.StatusDTO;
 import ru.b19513.pet_schedule.controller.entity.UserDTO;
 import ru.b19513.pet_schedule.service.UserService;
 
@@ -52,8 +53,8 @@ public class UsersController {
 
     @ApiOperation(value = "Проверить свободность логина")
     @GetMapping("/{login}")
-    public ResponseEntity<Boolean> getInvitationByUserId(@PathVariable String login) {
-        Boolean loginFree = userService.isLoginFree(login);
+    public ResponseEntity<StatusDTO> getInvitationByUserId(@PathVariable String login) {
+        StatusDTO loginFree = userService.isLoginFree(login);
         return new ResponseEntity<>(loginFree, HttpStatus.OK);
     }
 
