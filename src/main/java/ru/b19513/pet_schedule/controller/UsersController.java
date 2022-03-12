@@ -1,9 +1,16 @@
 package ru.b19513.pet_schedule.controller;
 
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.b19513.pet_schedule.controller.entity.GroupDTO;
+import ru.b19513.pet_schedule.controller.entity.InvitationDTO;
+import ru.b19513.pet_schedule.controller.entity.UserDTO;
+import ru.b19513.pet_schedule.service.UserService;
+
+import java.util.Collection;
 
 import static ru.b19513.pet_schedule.consts.Consts.NOT_IMPLEMENTED;
 
@@ -11,21 +18,49 @@ import static ru.b19513.pet_schedule.consts.Consts.NOT_IMPLEMENTED;
 @RequestMapping("/users")
 public class UsersController {
 
+    private final UserService userService;
+    @Autowired
+    public UsersController(UserService userService) {
+        this.userService = userService;
+    }
     @ApiOperation(value = "Регистрация нового пользователя")
-    @PostMapping("/register")
-    public ResponseEntity<String> register() {
-        return new ResponseEntity<>(NOT_IMPLEMENTED, HttpStatus.NOT_IMPLEMENTED);
+    @PostMapping("/register/")
+    public ResponseEntity<UserDTO> register(@RequestParam String login,@RequestParam String pass,@RequestParam String name) {
+        UserDTO userDTO = userService.signInNewUser(login, pass, name);
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
+    }
+    @ApiOperation(value = "Изменение данных пользователя")
+    @PatchMapping("/")
+    public ResponseEntity<UserDTO> updateUser(@RequestParam UserDTO user) {
+        UserDTO userDTO = userService.updateUser(user);
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Изменение данных пользователя по id")
-    @PutMapping("/{userId}")
-    public ResponseEntity<String> updateUser(@PathVariable String userId) {
-        return new ResponseEntity<>(NOT_IMPLEMENTED, HttpStatus.NOT_IMPLEMENTED);
+    @ApiOperation(value = "Получить список активных приглашений пользователя по id")
+    @GetMapping("/{userId}")
+    public ResponseEntity<Collection<InvitationDTO>> getInvitationByUserId(@PathVariable long userId) {
+        Collection<InvitationDTO> invitationDTOCollection = userService.getInvitationByUserId(userId);
+        return new ResponseEntity<>(invitationDTOCollection, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Принять приглашение")
+    @PutMapping("/")
+    public ResponseEntity<GroupDTO> acceptInvitation(@RequestParam long userId, @RequestParam long groupId) {
+        GroupDTO groupDTO = userService.acceptInvintation(userId, groupId);
+        return new ResponseEntity<>(groupDTO, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Проверить свободность логина")
+    @GetMapping("/{login}")
+    public ResponseEntity<Boolean> getInvitationByUserId(@PathVariable String login) {
+        Boolean loginFree = userService.isLoginFree(login);
+        return new ResponseEntity<>(loginFree, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Получение данных пользователя по id")
     @GetMapping("/{userId}")
-    public ResponseEntity<String> getUser(@PathVariable String userId) {
-        return new ResponseEntity<>(NOT_IMPLEMENTED, HttpStatus.NOT_IMPLEMENTED);
+    public ResponseEntity<UserDTO> getUser(@PathVariable long userId) {
+        UserDTO userDTO = userService.getUser(userId);
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 }
