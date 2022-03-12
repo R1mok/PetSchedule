@@ -59,7 +59,8 @@ public class UsersController {
 
     @ApiOperation(value = "Получение данных пользователя по id")
     @GetMapping("/{userId}")
-    public ResponseEntity<String> getUser(@PathVariable String userId) {
-        return new ResponseEntity<>(NOT_IMPLEMENTED, HttpStatus.NOT_IMPLEMENTED);
+    public ResponseEntity<UserDTO> getUser(@PathVariable long userId) {
+        UserDTO userDTO = userService.getUser(userId);
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 }
