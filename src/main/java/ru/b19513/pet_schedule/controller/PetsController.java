@@ -26,7 +26,7 @@ public class PetsController {
     }
 
     @ApiOperation(value = "Добавить нового питомца")
-    @PostMapping("/")
+    @PostMapping("/createPet")
     public ResponseEntity<PetDTO> createPet(@RequestParam long groupId, @RequestParam String name,
                                             @RequestParam String description,
                                             @RequestParam Gender gender, @RequestParam PetType petType) {
@@ -42,7 +42,7 @@ public class PetsController {
     }
 
     @ApiOperation(value = "Получить список питомцев по id группы")
-    @GetMapping("/{groupId}")
+    @GetMapping("/byGroup/{groupId}")
     public ResponseEntity<Collection<PetDTO>> getPets(@PathVariable long groupId) {
         Collection<PetDTO> PetDTOCollection = petService.getPets(groupId);
         return new ResponseEntity<>(PetDTOCollection, HttpStatus.OK);
@@ -56,7 +56,7 @@ public class PetsController {
     }
 
     @ApiOperation(value = "Создать запись о кормлении")
-    @PostMapping("/")
+    @PostMapping("/createFeedNote")
     public ResponseEntity<FeedNoteDTO> createFeedNote (@RequestParam long petId,
                                                        @RequestParam long userId,
                                                        @RequestParam String comment){
@@ -65,15 +65,15 @@ public class PetsController {
     }
 
     @ApiOperation(value = "Получить список записей о кормлении")
-    @GetMapping("/{petId}")
+    @GetMapping("/{petId}/feedNotes")
     public ResponseEntity<Collection<FeedNoteDTO>> getFeedNotes (@PathVariable long petId){
         Collection<FeedNoteDTO> feedNoteDTOCollection = petService.getFeedNotes(petId);
         return new ResponseEntity<>(feedNoteDTOCollection, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Найти записи о кормежках по времени и дате")
-    @GetMapping("/")
-    public ResponseEntity<Collection<FeedNoteDTO>> findFeedNotesByDate (@RequestParam long petId,
+    @GetMapping("/{petId}/feedNotesBetweenDates")
+    public ResponseEntity<Collection<FeedNoteDTO>> findFeedNotesByDate (@PathVariable long petId,
                                                                         @RequestParam LocalDateTime from,
                                                                         @RequestParam LocalDateTime to){
         Collection<FeedNoteDTO> feedNoteDTOCollection = petService.findFeedNotesByDate(petId, from, to);

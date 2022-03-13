@@ -7,12 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.b19513.pet_schedule.controller.entity.GroupDTO;
 import ru.b19513.pet_schedule.controller.entity.InvitationDTO;
+import ru.b19513.pet_schedule.controller.entity.StatusDTO;
 import ru.b19513.pet_schedule.controller.entity.UserDTO;
 import ru.b19513.pet_schedule.service.UserService;
 
 import java.util.Collection;
-
-import static ru.b19513.pet_schedule.consts.Consts.NOT_IMPLEMENTED;
 
 @RestController
 @RequestMapping("/users")
@@ -24,7 +23,7 @@ public class UsersController {
         this.userService = userService;
     }
     @ApiOperation(value = "Регистрация нового пользователя")
-    @PostMapping("/register/")
+    @PostMapping("/register")
     public ResponseEntity<UserDTO> register(@RequestParam String login,@RequestParam String pass,@RequestParam String name) {
         UserDTO userDTO = userService.signInNewUser(login, pass, name);
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
@@ -37,8 +36,8 @@ public class UsersController {
     }
 
     @ApiOperation(value = "Получить список активных приглашений пользователя по id")
-    @GetMapping("/{userId}")
-    public ResponseEntity<Collection<InvitationDTO>> getInvitationByUserId(@PathVariable long userId) {
+    @GetMapping("/{userId}/invitations")
+    public ResponseEntity<Collection<InvitationDTO>> getInvitations(@PathVariable long userId) {
         Collection<InvitationDTO> invitationDTOCollection = userService.getInvitationByUserId(userId);
         return new ResponseEntity<>(invitationDTOCollection, HttpStatus.OK);
     }
@@ -51,9 +50,9 @@ public class UsersController {
     }
 
     @ApiOperation(value = "Проверить свободность логина")
-    @GetMapping("/{login}")
-    public ResponseEntity<Boolean> getInvitationByUserId(@PathVariable String login) {
-        Boolean loginFree = userService.isLoginFree(login);
+    @GetMapping("/checkLogin/{login}")
+    public ResponseEntity<StatusDTO> isLoginFree(@PathVariable String login) {
+        StatusDTO loginFree = userService.isLoginFree(login);
         return new ResponseEntity<>(loginFree, HttpStatus.OK);
     }
 

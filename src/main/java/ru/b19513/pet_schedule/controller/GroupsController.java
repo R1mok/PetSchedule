@@ -42,9 +42,9 @@ public class GroupsController {
 
     @ApiOperation(value = "Исключение из группы")
     @DeleteMapping("/{groupId}/members/{userId}")
-    public ResponseEntity<StatusDTO> leave(@PathVariable long groupId, @PathVariable long userId) {
-        StatusDTO statusDTO = groupService.kickUser(groupId, userId);
-        return new ResponseEntity<>(statusDTO, HttpStatus.OK);
+    public ResponseEntity<GroupDTO> leave(@PathVariable long groupId, @PathVariable long userId) {
+        GroupDTO groupDTO = groupService.kickUser(groupId, userId);
+        return new ResponseEntity<>(groupDTO, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Удаление группы и всех связанных с ней записей")
