@@ -1,6 +1,7 @@
 package ru.b19513.pet_schedule.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.b19513.pet_schedule.controller.entity.FeedNoteDTO;
 import ru.b19513.pet_schedule.controller.entity.PetDTO;
@@ -8,29 +9,40 @@ import ru.b19513.pet_schedule.controller.entity.StatusDTO;
 import ru.b19513.pet_schedule.controller.entity.enums.Gender;
 import ru.b19513.pet_schedule.controller.entity.enums.PetType;
 import ru.b19513.pet_schedule.exceptions.NotFoundException;
+import ru.b19513.pet_schedule.repository.FeedNoteRepository;
 import ru.b19513.pet_schedule.repository.GroupRepository;
 import ru.b19513.pet_schedule.repository.PetRepository;
+import ru.b19513.pet_schedule.repository.UserRepository;
+import ru.b19513.pet_schedule.repository.entity.FeedNote;
 import ru.b19513.pet_schedule.repository.entity.Pet;
 import ru.b19513.pet_schedule.service.PetService;
 import ru.b19513.pet_schedule.service.mapper.EnumMapper;
+import ru.b19513.pet_schedule.service.mapper.FeedNoteMapper;
 import ru.b19513.pet_schedule.service.mapper.PetMapper;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 @Service
 public class PetServiceImpl implements PetService {
     private final PetMapper petMapper;
     private final PetRepository petRepository;
+    private final UserRepository userRepository;
     private final GroupRepository groupRepository;
     private final EnumMapper enumMapper;
+    private final FeedNoteMapper feedNoteMapper;
+    private final FeedNoteRepository feedNoteRepository;
 
     @Autowired
-    public PetServiceImpl(PetMapper petMapper, PetRepository petRepository, GroupRepository groupRepository, EnumMapper enumMapper) {
+    public PetServiceImpl(PetMapper petMapper, PetRepository petRepository, UserRepository userRepository, GroupRepository groupRepository, EnumMapper enumMapper, FeedNoteMapper feedNoteMapper, FeedNoteRepository feedNoteRepository) {
         this.petMapper = petMapper;
         this.petRepository = petRepository;
+        this.userRepository = userRepository;
         this.groupRepository = groupRepository;
         this.enumMapper = enumMapper;
+        this.feedNoteMapper = feedNoteMapper;
+        this.feedNoteRepository = feedNoteRepository;
     }
 
     @Override
@@ -65,26 +77,46 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public Collection<PetDTO> getPets(long groupId) {
-        return null;
+        var group = groupRepository.findById(groupId).orElseThrow(NotFoundException::new);
+        return petMapper.entityToDTO(group.getPets());
     }
 
     @Override
     public StatusDTO deletePet(long petId) {
-        return null;
+        var pet = petRepository.findById(petId).orElseThrow(NotFoundException::new);
+        petRepository.delete(pet);
+        return StatusDTO.builder()
+                .status(HttpStatus.OK)
+                .description("Pet was deleted")
+                .build();
     }
 
     @Override
     public FeedNoteDTO createFeedNote(long petId, long userId, String comment) {
-        return null;
+        var pet = petRepository.findById(petId).orElseThrow(NotFoundException::new);
+        var user = userRepository.findById(userId).orElseThrow(NotFoundException::new);
+        var newFeedNote = new FeedNote();
+        newFeedNote.setPet(pet);
+        newFeedNote.setDateTime(LocalDateTime.now());
+        newFeedNote.setUser(user);
+        return feedNoteMapper.entityToDTO(newFeedNote);
+
     }
 
     @Override
     public Collection<FeedNoteDTO> getFeedNotes(long petId) {
-        return null;
+        var pet = petRepository.findById(petId).orElseThrow(NotFoundException::new);
+        var collectionOfFeedNotes = feedNoteRepository // скорее всего можно сделать лучше, буду рад узнать как
+                .findAll().stream().filter(p -> p.getPet().equals(pet)).collect(Collectors.toList());
+        return feedNoteMapper.entityToDTO(collectionOfFeedNotes);
     }
 
     @Override
     public Collection<FeedNoteDTO> findFeedNotesByDate(long petId, LocalDateTime from, LocalDateTime to) {
-        return null;
+        var pet = petRepository.findById(petId).orElseThrow(NotFoundException::new);
+        var collectionOfFeedNotes = feedNoteRepository.findAll().stream() // точно можно сделать лучше, но я забыл как)
+                .filter(p -> p.getPet().equals(pet) &&
+                        (p.getDateTime().isBefore(to) && p.getDateTime().isAfter(from))).collect(Collectors.toList());
+        return feedNoteMapper.entityToDTO(collectionOfFeedNotes);
     }
 }
