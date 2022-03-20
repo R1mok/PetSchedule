@@ -8,6 +8,7 @@ import ru.b19513.pet_schedule.controller.entity.PetDTO;
 import ru.b19513.pet_schedule.controller.entity.StatusDTO;
 import ru.b19513.pet_schedule.controller.entity.enums.Gender;
 import ru.b19513.pet_schedule.controller.entity.enums.PetType;
+import ru.b19513.pet_schedule.exceptions.NameTakenException;
 import ru.b19513.pet_schedule.exceptions.NotFoundException;
 import ru.b19513.pet_schedule.repository.FeedNoteRepository;
 import ru.b19513.pet_schedule.repository.GroupRepository;
@@ -49,13 +50,14 @@ public class PetServiceImpl implements PetService {
     public PetDTO createPet(long groupId, String name, String description, Gender gender, PetType petType) {
         var group = groupRepository.findById(groupId).orElseThrow(NotFoundException::new);
         if (group.getPets().stream().map(p -> p.getName().equals(name)).findAny().isPresent()) {
-            // питомец с таким именем уже существует => нужно либо выкинуть исключение, либо другой вариант, пока не придумал
+            throw new NameTakenException();
         }
         var pet = Pet.builder()
                 .name(name)
                 .group(group)
                 .type(enumMapper.DTOtoEntity(petType))
-                .gender(enumMapper.DTOtoEntity(gender)) // не добавлен description
+                .gender(enumMapper.DTOtoEntity(gender))
+                .description(description)
                 .build();
         return petMapper.entityToDTO(petRepository.save(pet));
     }
@@ -71,7 +73,10 @@ public class PetServiceImpl implements PetService {
         }
         if (petDTO.getType() != null){
             pet.setType(enumMapper.DTOtoEntity(petDTO.getType()));
-        } // не поменял description
+        }
+        if (petDTO.getDescription() != null){
+            pet.setDescription(petDTO.getDescription());
+        }
         return petMapper.entityToDTO(petRepository.save(pet));
     }
 
@@ -106,7 +111,7 @@ public class PetServiceImpl implements PetService {
     @Override
     public Collection<FeedNoteDTO> getFeedNotes(long petId) {
         var pet = petRepository.findById(petId).orElseThrow(NotFoundException::new);
-        var collectionOfFeedNotes = feedNoteRepository // скорее всего можно сделать лучше, буду рад узнать как
+        var collectionOfFeedNotes = feedNoteRepository // скорее всего можно сделать лучше
                 .findAll().stream().filter(p -> p.getPet().equals(pet)).collect(Collectors.toList());
         return feedNoteMapper.entityToDTO(collectionOfFeedNotes);
     }

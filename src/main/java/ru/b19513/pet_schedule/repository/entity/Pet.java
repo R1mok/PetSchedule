@@ -35,4 +35,7 @@ public class Pet {
     @Enumerated(EnumType.STRING)
     private PetType type;
 
+    @Column(nullable = true)
+    private String description;
+
 }
