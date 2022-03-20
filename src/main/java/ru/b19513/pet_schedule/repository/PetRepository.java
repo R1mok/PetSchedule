@@ -6,4 +6,5 @@ import ru.b19513.pet_schedule.repository.entity.Pet;
 
 @Repository
 public interface PetRepository extends JpaRepository<Pet, Long> {
+    boolean notExistsById(long petId);
 }

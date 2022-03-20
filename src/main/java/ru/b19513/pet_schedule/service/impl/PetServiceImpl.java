@@ -23,7 +23,6 @@ import ru.b19513.pet_schedule.service.mapper.PetMapper;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 import static ru.b19513.pet_schedule.consts.Consts.PET_DELETED;
 
@@ -67,18 +66,7 @@ public class PetServiceImpl implements PetService {
     @Override
     public PetDTO updatePet(PetDTO petDTO) {
         var pet = petRepository.findById(petDTO.getId()).orElseThrow(NotFoundException::new);
-        if (petDTO.getGender() != null) {
-            pet.setGender(enumMapper.DTOtoEntity(petDTO.getGender()));
-        }
-        if (petDTO.getName() != null) {
-            pet.setName(petDTO.getName());
-        }
-        if (petDTO.getType() != null){
-            pet.setType(enumMapper.DTOtoEntity(petDTO.getType()));
-        }
-        if (petDTO.getDescription() != null){
-            pet.setDescription(petDTO.getDescription());
-        }
+        petMapper.updateEntity(pet, petDTO);
         return petMapper.entityToDTO(petRepository.save(pet));
     }
 
@@ -102,25 +90,28 @@ public class PetServiceImpl implements PetService {
     public FeedNoteDTO createFeedNote(long petId, long userId, String comment) {
         var pet = petRepository.findById(petId).orElseThrow(NotFoundException::new);
         var user = userRepository.findById(userId).orElseThrow(NotFoundException::new);
-        var newFeedNote = new FeedNote();
-        newFeedNote.setPet(pet);
-        newFeedNote.setDateTime(LocalDateTime.now());
-        newFeedNote.setUser(user);
+        var newFeedNote = FeedNote.builder()
+                .pet(pet)
+                .user(user)
+                .dateTime(LocalDateTime.now())
+                .build();
         return feedNoteMapper.entityToDTO(newFeedNote);
 
     }
 
     @Override
     public Collection<FeedNoteDTO> getFeedNotes(long petId) {
-        var pet = petRepository.findById(petId).orElseThrow(NotFoundException::new);
-        var collectionOfFeedNotes = feedNoteRepository.findByPet(pet);
+        if (petRepository.notExistsById(petId))
+            throw new NotFoundException();
+        var collectionOfFeedNotes = feedNoteRepository.findByPetId(petId);
         return feedNoteMapper.entityToDTO(collectionOfFeedNotes);
     }
 
     @Override
     public Collection<FeedNoteDTO> findFeedNotesByDate(long petId, LocalDateTime from, LocalDateTime to) {
-        var pet = petRepository.findById(petId).orElseThrow(NotFoundException::new);
-        var collectionOfFeedNotes = feedNoteRepository.findByPetAndDateTimeIsBetween(pet, from, to);
+        if (petRepository.notExistsById(petId))
+            throw new NotFoundException();
+        var collectionOfFeedNotes = feedNoteRepository.findByPetIdAndDateTimeIsBetween(petId, from, to);
         return feedNoteMapper.entityToDTO(collectionOfFeedNotes);
     }
 }

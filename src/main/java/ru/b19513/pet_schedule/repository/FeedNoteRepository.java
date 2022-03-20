@@ -10,6 +10,6 @@ import java.util.List;
 
 @Repository
 public interface FeedNoteRepository extends JpaRepository<FeedNote, Long> {
-    List<FeedNote> findByPetAndDateTimeIsBetween(Pet pet, LocalDateTime dateTime, LocalDateTime dateTime2);
-    List<FeedNote> findByPet(Pet pet);
+    List<FeedNote> findByPetIdAndDateTimeIsBetween(long petId, LocalDateTime dateTime, LocalDateTime dateTime2);
+    List<FeedNote> findByPetId(long petId);
 }
