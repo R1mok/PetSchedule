@@ -120,7 +120,7 @@ public class PetServiceImpl implements PetService {
     @Override
     public Collection<FeedNoteDTO> findFeedNotesByDate(long petId, LocalDateTime from, LocalDateTime to) {
         var pet = petRepository.findById(petId).orElseThrow(NotFoundException::new);
-        var collectionOfFeedNotes = feedNoteRepository.findByPetAndDateTimeIsBetween(pet, to, from);
+        var collectionOfFeedNotes = feedNoteRepository.findByPetAndDateTimeIsBetween(pet, from, to);
         return feedNoteMapper.entityToDTO(collectionOfFeedNotes);
     }
 }
