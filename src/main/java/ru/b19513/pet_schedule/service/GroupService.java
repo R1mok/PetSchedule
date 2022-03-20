@@ -7,11 +7,11 @@ public interface GroupService {
 
     GroupDTO createGroup(long userId, String name);
 
-    GroupDTO updateGroup(GroupDTO group);
+    GroupDTO updateGroup(long senderId, GroupDTO group);
 
-    StatusDTO inviteUser(long groupId, long userId);
+    StatusDTO inviteUser(long senderId,long groupId, long userId);
 
-    GroupDTO kickUser(long groupId, long userId);
+    GroupDTO kickUser(long senderId, long groupId, long userId);
 
     StatusDTO deleteGroup(long groupId, long ownerId);
 }

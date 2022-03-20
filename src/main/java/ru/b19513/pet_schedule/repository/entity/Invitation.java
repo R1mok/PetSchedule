@@ -3,14 +3,13 @@ package ru.b19513.pet_schedule.repository.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Entity
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "t_invitation")
 public class Invitation {
 
@@ -26,6 +25,12 @@ public class Invitation {
 
         @Column(name = "group_id")
         private long groupId;
+    }
+    public Invitation(@NotNull User user,@NotNull Group group)
+    {
+        this.user = user;
+        this.group = group;
+        key = new Key(user.getId(), group.getId());
     }
 
     @EmbeddedId
