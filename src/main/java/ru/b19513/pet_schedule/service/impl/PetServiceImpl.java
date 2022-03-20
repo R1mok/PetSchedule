@@ -113,17 +113,14 @@ public class PetServiceImpl implements PetService {
     @Override
     public Collection<FeedNoteDTO> getFeedNotes(long petId) {
         var pet = petRepository.findById(petId).orElseThrow(NotFoundException::new);
-        var collectionOfFeedNotes = feedNoteRepository // скорее всего можно сделать лучше
-                .findAll().stream().filter(p -> p.getPet().equals(pet)).collect(Collectors.toList());
+        var collectionOfFeedNotes = feedNoteRepository.findByPet(pet);
         return feedNoteMapper.entityToDTO(collectionOfFeedNotes);
     }
 
     @Override
     public Collection<FeedNoteDTO> findFeedNotesByDate(long petId, LocalDateTime from, LocalDateTime to) {
         var pet = petRepository.findById(petId).orElseThrow(NotFoundException::new);
-        var collectionOfFeedNotes = feedNoteRepository.findAll().stream() // точно можно сделать лучше, но я забыл как)
-                .filter(p -> p.getPet().equals(pet) &&
-                        (p.getDateTime().isBefore(to) && p.getDateTime().isAfter(from))).collect(Collectors.toList());
+        var collectionOfFeedNotes = feedNoteRepository.findByPetAndDateTimeIsBetween(pet, to, from);
         return feedNoteMapper.entityToDTO(collectionOfFeedNotes);
     }
 }
