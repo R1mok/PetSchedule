@@ -101,7 +101,7 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public Collection<FeedNoteDTO> getFeedNotes(long petId) {
-        if (petRepository.notExistsById(petId))
+        if (!petRepository.existsById(petId))
             throw new NotFoundException();
         var collectionOfFeedNotes = feedNoteRepository.findByPetId(petId);
         return feedNoteMapper.entityToDTO(collectionOfFeedNotes);
@@ -109,7 +109,7 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public Collection<FeedNoteDTO> findFeedNotesByDate(long petId, LocalDateTime from, LocalDateTime to) {
-        if (petRepository.notExistsById(petId))
+        if (!petRepository.existsById(petId))
             throw new NotFoundException();
         var collectionOfFeedNotes = feedNoteRepository.findByPetIdAndDateTimeIsBetween(petId, from, to);
         return feedNoteMapper.entityToDTO(collectionOfFeedNotes);
