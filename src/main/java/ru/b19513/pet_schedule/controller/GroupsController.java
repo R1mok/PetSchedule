@@ -14,6 +14,7 @@ import ru.b19513.pet_schedule.service.GroupService;
 public class GroupsController {
 
     private final GroupService groupService;
+
     @Autowired
     public GroupsController(GroupService groupService) {
         this.groupService = groupService;
@@ -28,29 +29,29 @@ public class GroupsController {
 
     @ApiOperation(value = "Обновление данных группы")
     @PatchMapping("/")
-    public ResponseEntity<GroupDTO> update(@RequestParam GroupDTO group) {
-        GroupDTO groupDTO = groupService.updateGroup(group);
+    public ResponseEntity<GroupDTO> update(@RequestParam GroupDTO group, @RequestParam long senderId) {
+        GroupDTO groupDTO = groupService.updateGroup(senderId, group);
         return new ResponseEntity<>(groupDTO, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Приглашение в группу")
     @PostMapping("/{groupId}/members/{userId}")
-    public ResponseEntity<StatusDTO> invite(@PathVariable long groupId, @PathVariable long userId) {
-        StatusDTO statusDTO = groupService.inviteUser(groupId, userId);
+    public ResponseEntity<StatusDTO> invite(@PathVariable long groupId, @PathVariable long userId, @RequestParam long senderId) {
+        StatusDTO statusDTO = groupService.inviteUser(senderId, groupId, userId);
         return new ResponseEntity<>(statusDTO, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Исключение из группы")
     @DeleteMapping("/{groupId}/members/{userId}")
-    public ResponseEntity<GroupDTO> leave(@PathVariable long groupId, @PathVariable long userId) {
-        GroupDTO groupDTO = groupService.kickUser(groupId, userId);
+    public ResponseEntity<GroupDTO> leave(@PathVariable long groupId, @PathVariable long userId, @RequestParam long senderId) {
+        GroupDTO groupDTO = groupService.kickUser(senderId, groupId, userId);
         return new ResponseEntity<>(groupDTO, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Удаление группы и всех связанных с ней записей")
     @DeleteMapping("/")
     public ResponseEntity<StatusDTO> delete(@RequestParam long groupId, @RequestParam long ownerId) {
-        StatusDTO statusDTO = groupService.deleteGroup(groupId, ownerId);
+        StatusDTO statusDTO = groupService.deleteGroup( groupId, ownerId);
         return new ResponseEntity<>(statusDTO, HttpStatus.OK);
     }
 }
