@@ -25,6 +25,8 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import static ru.b19513.pet_schedule.consts.Consts.PET_DELETED;
+
 @Service
 public class PetServiceImpl implements PetService {
     private final PetMapper petMapper;
@@ -92,7 +94,7 @@ public class PetServiceImpl implements PetService {
         petRepository.delete(pet);
         return StatusDTO.builder()
                 .status(HttpStatus.OK)
-                .description("Pet was deleted")
+                .description(PET_DELETED)
                 .build();
     }
 
