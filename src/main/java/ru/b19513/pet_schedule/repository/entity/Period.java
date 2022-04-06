@@ -24,4 +24,8 @@ public class Period {
 
     @Column
     private Time timeTo;
+
+    @ManyToOne
+    @JoinColumn(name = "notif_id")
+    private NotificationTimeout notificationTimeout;
 }
