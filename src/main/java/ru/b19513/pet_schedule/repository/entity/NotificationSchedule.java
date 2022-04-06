@@ -13,20 +13,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "t_notification_schedule")
-public class NotificationSchedule {
-
-    public NotificationSchedule(Notification notification, List<LocalDateTime> arrayOfTimes){
-        this.id = notification.getId();
-        this.notification = notification;
-        this.arrayOfTimes = arrayOfTimes;
-    }
-    @Id
-    private long id;
+public class NotificationSchedule extends Notification {
 
     @ElementCollection
     private List<LocalDateTime> arrayOfTimes;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "notification_id", nullable = false)
-    private Notification notification;
 }

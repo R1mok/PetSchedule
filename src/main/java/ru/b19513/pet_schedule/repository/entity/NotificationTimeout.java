@@ -12,23 +12,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "t_notification_timeout")
-public class NotificationTimeout {
-
-    public NotificationTimeout(Notification notification, int elapsed){
-        this.id = notification.getId();
-        this.elapsed = elapsed;
-        this.notification = notification;
-    }
-
-    @Id
-    private long id;
+public class NotificationTimeout extends Notification {
 
     @Column
     private int elapsed;
-
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "notification_id", nullable = false)
-    private Notification notification;
 
     @OneToMany(fetch = FetchType.LAZY)
     private List<Period> times;

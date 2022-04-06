@@ -13,14 +13,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "t_notification")
-public class Notification {
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class Notification {
+
     @Id
     @GenericGenerator(name = "generator", strategy = "increment")
     @GeneratedValue(generator = "generator")
     private long id;
-
-    @ManyToOne
-    private Group group;
 
     @Column
     private boolean enabled;
@@ -31,14 +30,4 @@ public class Notification {
     @Column
     @OneToMany(mappedBy = "notification")
     private List<NotificationNote> notificationNotes;
-
-    @OneToOne(fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL)
-    @JoinColumn(name = "notification_schedule_id")
-    private NotificationSchedule notificationSchedule;
-
-    @OneToOne(fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL)
-    @JoinColumn(name = "notification_timeout_id")
-    private NotificationTimeout notificationTimeout;
 }

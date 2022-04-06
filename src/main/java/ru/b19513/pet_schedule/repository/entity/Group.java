@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -42,4 +43,8 @@ public class Group {
     @Column
     @OneToMany(mappedBy = "group")
     private Set<Invitation> invitations;
+
+    @Column
+    @OneToMany
+    private List<Notification> notificationList;
 }
