@@ -9,9 +9,6 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "t_notification")
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Notification {
