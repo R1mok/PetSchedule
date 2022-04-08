@@ -15,7 +15,7 @@ import java.util.List;
 public class NotificationTimeout extends Notification {
 
     @Column
-    private int elapsed;
+    private long elapsed;
 
     @OneToMany(fetch = FetchType.LAZY)
     private List<Period> times;
