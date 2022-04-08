@@ -16,7 +16,7 @@ import java.time.LocalTime;
 public class Period {
 
     @Id
-    @GenericGenerator(name = "generator", strategy = "increment")
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private long id;
 
     @Column
@@ -25,7 +25,6 @@ public class Period {
     @Column
     private LocalTime timeTo;
 
-    @ManyToOne
-    @JoinColumn(name = "notif_id")
-    private NotificationTimeout notificationTimeout;
+    @ManyToOne(targetEntity = NotificationTimeout.class)
+    private long notificationTimeoutId;
 }

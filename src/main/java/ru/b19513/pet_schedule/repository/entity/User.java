@@ -17,8 +17,7 @@ import java.util.Set;
 @Table(name = "T_USER")
 public class User {
     @Id
-    @GenericGenerator(name = "generator", strategy = "increment")
-    @GeneratedValue(generator = "generator")
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private long id;
 
     @NaturalId

@@ -17,6 +17,6 @@ public class NotificationTimeout extends Notification {
     @Column
     private long elapsed;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "notificationTimeoutId")
     private List<Period> times;
 }

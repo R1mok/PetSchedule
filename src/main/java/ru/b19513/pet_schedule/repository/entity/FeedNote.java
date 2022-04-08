@@ -15,8 +15,7 @@ import java.time.LocalDateTime;
 @Table(name = "T_FEED_NOTE")
 public class FeedNote {
     @Id
-    @GenericGenerator(name = "generator", strategy = "increment")
-    @GeneratedValue(generator = "generator")
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private long id;
 
     @ManyToOne

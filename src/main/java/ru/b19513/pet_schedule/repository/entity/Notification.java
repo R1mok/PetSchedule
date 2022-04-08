@@ -14,8 +14,7 @@ import java.util.List;
 public abstract class Notification {
 
     @Id
-    @GenericGenerator(name = "generator", strategy = "increment")
-    @GeneratedValue(generator = "generator")
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private long id;
 
     @Column

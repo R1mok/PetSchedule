@@ -16,8 +16,7 @@ import java.util.Set;
 @Table(name = "T_GROUP")
 public class Group {
     @Id
-    @GenericGenerator(name = "generator", strategy = "increment")
-    @GeneratedValue(generator = "generator")
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private long id;
 
     @Column(nullable = false)

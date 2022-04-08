@@ -1,11 +1,9 @@
 package ru.b19513.pet_schedule.repository.entity;
 
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalTime;
 
 @Entity
@@ -17,8 +15,17 @@ import java.time.LocalTime;
 @Table(name = "t_schedule_time")
 public class ScheduleTime {
     @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private long id;
 
     @Column
     private LocalTime notifTime;
+
+    @ManyToOne
+    @JoinColumn(name = "notification_schedule_id")
+    private NotificationSchedule notificationSchedule;
+
+    @ManyToOne(targetEntity = NotificationSchedule.class)
+    private long notificationScheduleId;
+
 }
