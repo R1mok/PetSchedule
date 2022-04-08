@@ -3,16 +3,14 @@ package ru.b19513.pet_schedule.controller.entity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
-
-import java.io.Serializable;
-import java.sql.Time;
+import java.time.LocalTime;
 
 @Data
 @Builder
 @Schema(description = "Период времени")
-public class PeriodDTO implements Serializable {
+public class PeriodDTO {
     @Schema(description = "С")
-    private Time timeFrom;
+    private LocalTime timeFrom;
     @Schema(description = "По")
-    private Time timeTo;
+    private LocalTime timeTo;
 }

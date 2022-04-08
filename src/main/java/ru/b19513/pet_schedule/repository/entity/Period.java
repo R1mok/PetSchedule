@@ -4,7 +4,7 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.sql.Time;
+import java.time.LocalTime;
 
 @Entity
 @Getter
@@ -20,10 +20,10 @@ public class Period {
     private long id;
 
     @Column
-    private Time timeFrom;
+    private LocalTime timeFrom;
 
     @Column
-    private Time timeTo;
+    private LocalTime timeTo;
 
     @ManyToOne
     @JoinColumn(name = "notif_id")
