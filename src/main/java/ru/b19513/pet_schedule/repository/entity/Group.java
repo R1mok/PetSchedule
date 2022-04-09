@@ -40,7 +40,7 @@ public class Group {
     private Set<Pet> pets;
 
     @Column
-    @OneToMany(mappedBy = "group")
+    @OneToMany
     private Set<Invitation> invitations;
 
     @Column

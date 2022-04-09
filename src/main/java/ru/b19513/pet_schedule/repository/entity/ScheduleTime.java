@@ -22,10 +22,5 @@ public class ScheduleTime {
     private LocalTime notifTime;
 
     @ManyToOne
-    @JoinColumn(name = "notification_schedule_id")
-    private NotificationSchedule notificationSchedule;
-
-    @ManyToOne(targetEntity = NotificationSchedule.class)
-    private long notificationScheduleId;
-
+    private NotificationSchedule notification;
 }

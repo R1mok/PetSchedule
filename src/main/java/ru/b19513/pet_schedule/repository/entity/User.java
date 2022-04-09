@@ -45,6 +45,6 @@ public class User {
     private Gender gender;
 
     @Column
-    @OneToMany(mappedBy = "group")
+    @OneToMany
     private Set<Invitation> invitations;
 }

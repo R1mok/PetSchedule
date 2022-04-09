@@ -30,12 +30,6 @@ public class NotificationNote {
         @Column(name = "notif_id")
         private long notifId;
     }
-    public NotificationNote(@NotNull User user, @NotNull Notification notification)
-    {
-        this.user = user;
-        this.notification = notification;
-        key = new Key(user.getId(), notification.getId());
-    }
 
     @EmbeddedId
     private Key key;

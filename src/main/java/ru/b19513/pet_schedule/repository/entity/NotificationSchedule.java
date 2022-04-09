@@ -15,7 +15,6 @@ import java.util.List;
 @Table(name = "t_notification_schedule")
 public class NotificationSchedule extends Notification {
 
-    @OneToMany(mappedBy = "notificationScheduleId")
+    @OneToMany(mappedBy = "notification")
     private List<ScheduleTime> times;
-
 }

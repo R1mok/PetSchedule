@@ -25,6 +25,6 @@ public class Period {
     @Column
     private LocalTime timeTo;
 
-    @ManyToOne(targetEntity = NotificationTimeout.class)
-    private long notificationTimeoutId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private NotificationSchedule notification;
 }
