@@ -5,13 +5,17 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.time.LocalDateTime;
+
 
 @Entity
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
-@Table(name = "t_invitation")
-public class Invitation {
+@AllArgsConstructor
+@Table(name = "t_notificationNotes")
+public class NotificationNote {
 
     @Embeddable
     @Getter
@@ -23,25 +27,21 @@ public class Invitation {
         @Column(name = "user_id")
         private long userId;
 
-        @Column(name = "group_id")
-        private long groupId;
-    }
-    public Invitation(@NotNull User user,@NotNull Group group)
-    {
-        this.user = user;
-        this.group = group;
-        key = new Key(user.getId(), group.getId());
+        @Column(name = "notif_id")
+        private long notifId;
     }
 
     @EmbeddedId
     private Key key;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_id", insertable = false, updatable = false)
-    private Group group;
-}
+    @ManyToOne
+    @JoinColumn(name = "notif_id", insertable = false, updatable = false)
+    private Notification notification;
 
+    @Column
+    private LocalDateTime lastTime;
+}

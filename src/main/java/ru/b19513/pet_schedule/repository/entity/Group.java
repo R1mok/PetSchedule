@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -15,8 +16,7 @@ import java.util.Set;
 @Table(name = "T_GROUP")
 public class Group {
     @Id
-    @GenericGenerator(name = "generator", strategy = "increment")
-    @GeneratedValue(generator = "generator")
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private long id;
 
     @Column(nullable = false)
@@ -40,6 +40,10 @@ public class Group {
     private Set<Pet> pets;
 
     @Column
-    @OneToMany(mappedBy = "group")
+    @OneToMany
     private Set<Invitation> invitations;
+
+    @Column
+    @OneToMany
+    private List<Notification> notificationList;
 }

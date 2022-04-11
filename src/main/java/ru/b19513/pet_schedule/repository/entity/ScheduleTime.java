@@ -4,7 +4,7 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Getter
@@ -12,18 +12,15 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "T_FEED_NOTE")
-public class FeedNote {
+@Table(name = "t_schedule_time")
+public class ScheduleTime {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private long id;
 
-    @ManyToOne
-    private User user;
-
-    @ManyToOne
-    private Pet pet;
-
     @Column
-    private LocalDateTime dateTime;
+    private LocalTime notifTime;
+
+    @ManyToOne
+    private NotificationSchedule notification;
 }

@@ -16,8 +16,7 @@ import javax.persistence.*;
 @Table(name = "T_PET")
 public class Pet {
     @Id
-    @GenericGenerator(name = "generator", strategy = "increment")
-    @GeneratedValue(generator = "generator")
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private long id;
 
     @Column(nullable = false)
