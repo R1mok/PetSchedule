@@ -1,6 +1,7 @@
 package ru.b19513.pet_schedule.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.b19513.pet_schedule.controller.entity.NotificationDTO;
 import ru.b19513.pet_schedule.controller.entity.NotificationScheduleDTO;
@@ -11,6 +12,8 @@ import ru.b19513.pet_schedule.exceptions.WrongNotificationClassException;
 import ru.b19513.pet_schedule.repository.GroupRepository;
 import ru.b19513.pet_schedule.repository.NotificationNoteRepository;
 import ru.b19513.pet_schedule.repository.NotificationRepository;
+import ru.b19513.pet_schedule.repository.UserRepository;
+import ru.b19513.pet_schedule.repository.entity.Notification;
 import ru.b19513.pet_schedule.repository.entity.NotificationSchedule;
 import ru.b19513.pet_schedule.repository.entity.NotificationTimeout;
 import ru.b19513.pet_schedule.repository.entity.ScheduleTime;
@@ -18,9 +21,13 @@ import ru.b19513.pet_schedule.service.NotificationService;
 import ru.b19513.pet_schedule.service.mapper.NotificationScheduleMapper;
 import ru.b19513.pet_schedule.service.mapper.NotificationTimeoutMapper;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static ru.b19513.pet_schedule.consts.Consts.NOTIFICATION_DELETED;
+import static ru.b19513.pet_schedule.consts.Consts.NOTIFICATION_NOTE_UPDATED;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {
@@ -29,15 +36,17 @@ public class NotificationServiceImpl implements NotificationService {
     private final GroupRepository groupRepository;
     private final NotificationTimeoutMapper notificationTimeoutMapper;
     private final NotificationScheduleMapper notificationScheduleMapper;
+    private final UserRepository userRepository;
 
     @Autowired
-    public NotificationServiceImpl(NotificationNoteRepository notificationNoteRepository, NotificationRepository notificationRepository, GroupRepository groupRepository, NotificationTimeoutMapper notificationTimeoutMapper, NotificationScheduleMapper notificationScheduleMapper){
+    public NotificationServiceImpl(NotificationNoteRepository notificationNoteRepository, NotificationRepository notificationRepository, GroupRepository groupRepository, NotificationTimeoutMapper notificationTimeoutMapper, NotificationScheduleMapper notificationScheduleMapper, UserRepository userRepository){
 
         this.notificationNoteRepository = notificationNoteRepository;
         this.notificationRepository = notificationRepository;
         this.groupRepository = groupRepository;
         this.notificationTimeoutMapper = notificationTimeoutMapper;
         this.notificationScheduleMapper = notificationScheduleMapper;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -75,21 +84,44 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public NotificationTimeoutDTO updateNotificationTimeout(NotificationTimeoutDTO notif) {
-        return null;
+        var notificationTimeout = notificationRepository.findById(notif.getId()).orElseThrow(NotFoundException::new);
+        if (notificationTimeout instanceof NotificationTimeout){
+            notificationTimeoutMapper.updateEntity((NotificationTimeout) notificationTimeout, notif);
+            return notificationTimeoutMapper.entityToDTO((NotificationTimeout) notificationRepository.save(notificationTimeout));
+        } else throw new WrongNotificationClassException();
     }
 
     @Override
     public List<NotificationDTO> showNotification(long userId) {
+        var user = userRepository.findById(userId).orElseThrow(NotFoundException::new);
+        var groupSet = user.getGroups();
+        List<Notification> notificationList = new ArrayList<>();
+        groupSet.forEach(g -> notificationList.addAll(g.getNotificationList()));
+        // не совсем понял как сделать
         return null;
     }
 
     @Override
-    public NotificationDTO deleteNotification(long notifId) {
-        return null;
+    public StatusDTO deleteNotification(long notifId) {
+        var notification = notificationRepository.findById(notifId).orElseThrow(NotFoundException::new);
+        notificationRepository.delete(notification);
+        return StatusDTO.builder()
+                .status(HttpStatus.OK)
+                .description(NOTIFICATION_DELETED)
+                .build();
     }
 
     @Override
     public StatusDTO setTimeInNotificationNote(long userId, List<Long> notificationsId) {
-        return null;
+        var user = userRepository.findById(userId).orElseThrow(NotFoundException::new);
+        for (var notifId : notificationsId){
+            var notifNote = notificationNoteRepository.findByNotificationIdAndUser(notifId, user);
+            notifNote.setLastTime(LocalDateTime.now());
+            notificationNoteRepository.save(notifNote);
+        }
+        return StatusDTO.builder()
+                .status(HttpStatus.OK)
+                .description(NOTIFICATION_NOTE_UPDATED)
+                .build();
     }
 }
