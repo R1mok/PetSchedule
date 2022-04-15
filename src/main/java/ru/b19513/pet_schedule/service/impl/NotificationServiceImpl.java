@@ -7,6 +7,7 @@ import ru.b19513.pet_schedule.controller.entity.NotificationScheduleDTO;
 import ru.b19513.pet_schedule.controller.entity.NotificationTimeoutDTO;
 import ru.b19513.pet_schedule.controller.entity.StatusDTO;
 import ru.b19513.pet_schedule.exceptions.NotFoundException;
+import ru.b19513.pet_schedule.exceptions.WrongNotificationClassException;
 import ru.b19513.pet_schedule.repository.GroupRepository;
 import ru.b19513.pet_schedule.repository.NotificationNoteRepository;
 import ru.b19513.pet_schedule.repository.NotificationRepository;
@@ -65,7 +66,11 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public NotificationScheduleDTO updateNotificationSchedule(NotificationScheduleDTO notif) {
-        return null;
+        var notificationSchedule = notificationRepository.findById(notif.getId()).orElseThrow(NotFoundException::new);
+        if (notificationSchedule instanceof NotificationSchedule){
+            notificationScheduleMapper.updateEntity((NotificationSchedule) notificationSchedule, notif);
+            return notificationScheduleMapper.entityToDTO((NotificationSchedule) notificationRepository.save(notificationSchedule));
+        } else throw new WrongNotificationClassException();
     }
 
     @Override
