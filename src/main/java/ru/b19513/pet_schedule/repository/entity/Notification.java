@@ -1,7 +1,7 @@
 package ru.b19513.pet_schedule.repository.entity;
 
-import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
@@ -26,4 +26,12 @@ public abstract class Notification {
     @Column
     @OneToMany(mappedBy = "notification")
     private List<NotificationNote> notificationNotes;
+
+    @JoinColumn
+    @ManyToOne
+    private Group group;
+
+    @ManyToOne
+    @JoinColumn
+    private Pet pet;
 }

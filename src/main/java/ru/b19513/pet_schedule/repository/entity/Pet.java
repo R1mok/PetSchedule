@@ -6,6 +6,7 @@ import ru.b19513.pet_schedule.repository.entity.enums.Gender;
 import ru.b19513.pet_schedule.repository.entity.enums.PetType;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -37,4 +38,7 @@ public class Pet {
     @Column(nullable = true)
     private String description;
 
+    @OneToMany
+    @Column
+    private Set<Notification> notifications;
 }
