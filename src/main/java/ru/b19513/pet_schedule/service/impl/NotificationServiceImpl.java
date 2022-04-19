@@ -41,7 +41,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationMapper notificationMapper;
 
     @Autowired
-    public NotificationServiceImpl(NotificationNoteRepository notificationNoteRepository, NotificationRepository notificationRepository, GroupRepository groupRepository, NotificationTimeoutMapper notificationTimeoutMapper, NotificationScheduleMapper notificationScheduleMapper, UserRepository userRepository, PetRepository petRepository, FeedNoteRepository feedNoteRepository, NotificationMapper notificationMapper){
+    public NotificationServiceImpl(NotificationNoteRepository notificationNoteRepository, NotificationRepository notificationRepository, GroupRepository groupRepository, NotificationTimeoutMapper notificationTimeoutMapper, NotificationScheduleMapper notificationScheduleMapper, UserRepository userRepository, PetRepository petRepository, FeedNoteRepository feedNoteRepository, NotificationMapper notificationMapper) {
 
         this.notificationNoteRepository = notificationNoteRepository;
         this.notificationRepository = notificationRepository;
@@ -85,7 +85,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public NotificationScheduleDTO updateNotificationSchedule(NotificationScheduleDTO notif) {
         var notificationSchedule = notificationRepository.findById(notif.getId()).orElseThrow(NotFoundException::new);
-        if (notificationSchedule instanceof NotificationSchedule){
+        if (notificationSchedule instanceof NotificationSchedule) {
             notificationScheduleMapper.updateEntity((NotificationSchedule) notificationSchedule, notif);
             return notificationScheduleMapper.entityToDTO((NotificationSchedule) notificationRepository.save(notificationSchedule));
         } else throw new WrongNotificationClassException();
@@ -94,7 +94,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public NotificationTimeoutDTO updateNotificationTimeout(NotificationTimeoutDTO notif) {
         var notificationTimeout = notificationRepository.findById(notif.getId()).orElseThrow(NotFoundException::new);
-        if (notificationTimeout instanceof NotificationTimeout){
+        if (notificationTimeout instanceof NotificationTimeout) {
             notificationTimeoutMapper.updateEntity((NotificationTimeout) notificationTimeout, notif);
             return notificationTimeoutMapper.entityToDTO((NotificationTimeout) notificationRepository.save(notificationTimeout));
         } else throw new WrongNotificationClassException();
@@ -107,21 +107,27 @@ public class NotificationServiceImpl implements NotificationService {
         List<Notification> notificationList = new ArrayList<>();
         groupSet.forEach(g -> notificationList.addAll(g.getNotificationList()));
         List<Notification> resultNotificationList = new ArrayList<>();
-        for (var notification : notificationList){
+        for (var notification : notificationList) {
             if (notification instanceof NotificationTimeout) {
                 var pet = notification.getPet();
-                var feedNotes = feedNoteRepository.findByPetId(pet.getId());
-                for (var fn : feedNotes){
-                    if (fn.getDateTime().plusSeconds(((NotificationTimeout) notification).getElapsed())
-                            .isAfter(ChronoLocalDateTime.from(LocalTime.now()))){
-                        resultNotificationList.add(notification);
+                var fn = feedNoteRepository.findFirstByPetIdOrderByDateTimeDesc(pet.getId());
+                var alarmTime = fn.getDateTime().plusSeconds(((NotificationTimeout) notification).getElapsed());
+                boolean notTimeToSend = false;
+                for (var time : ((NotificationTimeout) notification).getTimes()){
+                    if (alarmTime.isAfter(ChronoLocalDateTime.from(time.getTimeFrom())) &&
+                            alarmTime.isBefore(ChronoLocalDateTime.from(time.getTimeTo()))){
+                        notTimeToSend = true;
                     }
                 }
+                if (alarmTime.isBefore(ChronoLocalDateTime.from(LocalTime.now())) && !notTimeToSend) {
+                    resultNotificationList.add(notification);
+                }
             }
-            if (notification instanceof NotificationSchedule){
+            if (notification instanceof NotificationSchedule) {
                 var times = ((NotificationSchedule) notification).getTimes();
-                for (var time : times){
-                    if (time.getNotifTime().isAfter(LocalTime.now())){
+                var lastTime = notificationNoteRepository.findByNotificationIdAndUser(notification.getId(), user).getLastTime();
+                for (var time : times) {
+                    if (time.getNotifTime().isBefore(LocalTime.now()) && time.getNotifTime().isAfter(LocalTime.from(lastTime))) {
                         resultNotificationList.add(notification);
                     }
                 }
@@ -143,7 +149,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public StatusDTO setTimeInNotificationNote(long userId, List<Long> notificationsId) {
         var user = userRepository.findById(userId).orElseThrow(NotFoundException::new);
-        for (var notifId : notificationsId){
+        for (var notifId : notificationsId) {
             var notifNote = notificationNoteRepository.findByNotificationIdAndUser(notifId, user);
             notifNote.setLastTime(LocalDateTime.now());
             notificationNoteRepository.save(notifNote);
