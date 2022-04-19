@@ -113,9 +113,9 @@ public class NotificationServiceImpl implements NotificationService {
                 var fn = feedNoteRepository.findFirstByPetIdOrderByDateTimeDesc(pet.getId());
                 var alarmTime = fn.getDateTime().plusSeconds(((NotificationTimeout) notification).getElapsed());
                 boolean notTimeToSend = false;
-                for (var time : ((NotificationTimeout) notification).getTimes()){
-                    if (alarmTime.isAfter(ChronoLocalDateTime.from(time.getTimeFrom())) &&
-                            alarmTime.isBefore(ChronoLocalDateTime.from(time.getTimeTo()))){
+                for (var period : ((NotificationTimeout) notification).getTimes()) {
+                    if (alarmTime.isAfter(ChronoLocalDateTime.from(period.getTimeFrom())) &&
+                            alarmTime.isBefore(ChronoLocalDateTime.from(period.getTimeTo()))) {
                         notTimeToSend = true;
                     }
                 }
