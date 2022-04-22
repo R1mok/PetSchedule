@@ -1,5 +1,8 @@
 package ru.b19513.pet_schedule.service.impl;
 
+import static ru.b19513.pet_schedule.consts.Consts.GROUP_DELETED;
+import static ru.b19513.pet_schedule.consts.Consts.INVITATION_SENDED;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,18 +18,17 @@ import ru.b19513.pet_schedule.repository.entity.Invitation;
 import ru.b19513.pet_schedule.service.GroupService;
 import ru.b19513.pet_schedule.service.mapper.GroupMapper;
 
-import static ru.b19513.pet_schedule.consts.Consts.GROUP_DELETED;
-import static ru.b19513.pet_schedule.consts.Consts.INVITATION_SENDED;
-
 @Service
 public class GroupServiceImpl implements GroupService {
+
     private final GroupMapper groupMapper;
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
     private final InvitationRepository invitationRepository;
 
     @Autowired
-    public GroupServiceImpl(GroupMapper groupMapper, GroupRepository groupRepository, UserRepository userRepository, InvitationRepository invitationRepository) {
+    public GroupServiceImpl(GroupMapper groupMapper, GroupRepository groupRepository, UserRepository userRepository,
+            InvitationRepository invitationRepository) {
         this.groupMapper = groupMapper;
         this.groupRepository = groupRepository;
         this.userRepository = userRepository;
@@ -34,8 +36,8 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public GroupDTO createGroup(long userId, String name) {
-        var user = userRepository.findById(userId).orElseThrow(NotFoundException::new);
+    public GroupDTO createGroup(String senderLogin, String name) {
+        var user = userRepository.findByLogin(senderLogin).orElseThrow(NotFoundException::new);
         var group = Group.builder()
                 .name(name)
                 .owner(user)
@@ -44,17 +46,22 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public GroupDTO updateGroup(long senderId, GroupDTO groupDTO) {
+    public GroupDTO updateGroup(String senderLogin, GroupDTO groupDTO) {
         var group = groupRepository.findById(groupDTO.getId()).orElseThrow(NotFoundException::new);
+        if (!group.getOwner().getLogin().equals(senderLogin)) {
+            throw new NotPermittedException();
+        }
         groupMapper.updateEntity(group, groupDTO);
         return groupMapper.entityToDTO(groupRepository.save(group));
     }
 
     @Override
-    public StatusDTO inviteUser(long senderId, long groupId, long userId) {
+    public StatusDTO inviteUser(String senderLogin, long groupId, long userId) {
         var group = groupRepository.findById(groupId).orElseThrow(NotFoundException::new);
-        if (group.getOwner().getId() != senderId) // только создатель группы может рассылать приглашения
+        if (!group.getOwner().getLogin().equals(senderLogin)) // только создатель группы может рассылать приглашения
+        {
             throw new NotPermittedException();
+        }
         var user = userRepository.findById(userId).orElseThrow(NotFoundException::new);
         // Если приглашение уже есть в БД - ничего не поменяется
         var inv = new Invitation(user, group);
@@ -67,20 +74,22 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public GroupDTO kickUser(long senderId, long groupId, long userId) {
+    public GroupDTO kickUser(String senderLogin, long groupId, long userId) {
         var group = groupRepository.findById(groupId).orElseThrow(NotFoundException::new);
-        if (group.getOwner().getId() != senderId)
+        if (!group.getOwner().getLogin().equals(senderLogin)) {
             throw new NotPermittedException();
+        }
         var user = userRepository.findById(userId).orElseThrow(NotFoundException::new);
         group.getUsers().remove(user);
         return groupMapper.entityToDTO(groupRepository.save(group));
     }
 
     @Override
-    public StatusDTO deleteGroup(long groupId, long ownerId) {
+    public StatusDTO deleteGroup(long groupId, String ownerLogin) {
         var group = groupRepository.findById(groupId).orElseThrow(NotFoundException::new);
-        if (group.getOwner().getId() != ownerId)
+        if (!group.getOwner().getLogin().equals(ownerLogin)) {
             throw new NotPermittedException();
+        }
         groupRepository.delete(group);
         return StatusDTO.builder()
                 .status(HttpStatus.OK)

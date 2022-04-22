@@ -5,13 +5,13 @@ import ru.b19513.pet_schedule.controller.entity.StatusDTO;
 
 public interface GroupService {
 
-    GroupDTO createGroup(long userId, String name);
+    GroupDTO createGroup(String senderLogin, String name);
 
-    GroupDTO updateGroup(long senderId, GroupDTO group);
+    GroupDTO updateGroup(String senderLogin, GroupDTO group);
 
-    StatusDTO inviteUser(long senderId,long groupId, long userId);
+    StatusDTO inviteUser(String senderLogin,long groupId, long userId);
 
-    GroupDTO kickUser(long senderId, long groupId, long userId);
+    GroupDTO kickUser(String senderLogin, long groupId, long userId);
 
-    StatusDTO deleteGroup(long groupId, long ownerId);
+    StatusDTO deleteGroup(long groupId, String ownerLogin);
 }
