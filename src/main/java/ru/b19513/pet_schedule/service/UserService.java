@@ -7,16 +7,16 @@ import ru.b19513.pet_schedule.controller.entity.UserDTO;
 
 import java.util.Collection;
 
-public interface UserService {
+public interface UserService{
     UserDTO signInNewUser(String login, String pass, String name);
 
     UserDTO updateUser(UserDTO user);
 
-    Collection<InvitationDTO> getInvitationByUserId(long id);
+    Collection<InvitationDTO> getInvitation(String login);
 
-    GroupDTO acceptInvintation(long userId, long groupId);
+    GroupDTO acceptInvintation(String login, long groupId);
 
     StatusDTO isLoginFree(String login);
 
-    UserDTO getUser(long id);
+    UserDTO getUserByLogin(String login);
 }
