@@ -8,12 +8,12 @@ import ru.b19513.pet_schedule.controller.entity.NotificationTimeoutDTO;
 import ru.b19513.pet_schedule.repository.entity.NotificationSchedule;
 import ru.b19513.pet_schedule.repository.entity.NotificationTimeout;
 
-@Mapper(componentModel = "spring")
+@Mapper
 public interface NotificationMapper {
-    @Mapping(target = "times", expression = "java(entity.getTimes().forEach(t -> times.add(t.getNotifTime())))")
+    @Mapping(target = "times", expression = "java(entity.getTimes().stream().map(t -> t.getNotifTime()).collect(java.util.stream.Collectors.toList()))")
     NotificationScheduleDTO entityToDTO(NotificationSchedule entity);
 
-    @Mapping(target = "times", expression = "java(entity.getTimes().forEach(t -> times.add(t.getNotifTime())))")
+    @Mapping(target = "times", expression = "java(entity.getTimes())")
     void updateEntity(@MappingTarget NotificationSchedule entity, NotificationScheduleDTO src);
 
     NotificationTimeoutDTO entityToDTO(NotificationTimeout entity);

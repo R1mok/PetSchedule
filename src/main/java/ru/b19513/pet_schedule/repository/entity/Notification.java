@@ -13,7 +13,6 @@ import java.util.List;
 @Table(name = "t_notification")
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Notification {
-    @Builder
     public Notification(Group group, Pet pet, String comment, boolean enabled) {
         this.enabled = enabled;
         this.pet = pet;
