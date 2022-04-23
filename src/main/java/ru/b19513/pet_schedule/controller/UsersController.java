@@ -6,6 +6,8 @@ import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +20,7 @@ import ru.b19513.pet_schedule.controller.entity.GroupDTO;
 import ru.b19513.pet_schedule.controller.entity.InvitationDTO;
 import ru.b19513.pet_schedule.controller.entity.StatusDTO;
 import ru.b19513.pet_schedule.controller.entity.UserDTO;
+import ru.b19513.pet_schedule.repository.entity.User;
 import ru.b19513.pet_schedule.service.UserService;
 
 @RestController
@@ -69,7 +72,7 @@ public class UsersController {
 
     @ApiOperation(value = "Получение данных пользователя по id")
     @GetMapping("/")
-    public ResponseEntity<UserDTO> getUser(Principal principal) {
+    public ResponseEntity<UserDTO> getUser(Authentication principal) {
         UserDTO userDTO = userService.getUserByLogin(principal.getName());
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }

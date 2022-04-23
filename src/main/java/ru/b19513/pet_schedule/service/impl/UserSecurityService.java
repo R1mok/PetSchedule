@@ -1,4 +1,4 @@
-package ru.b19513.pet_schedule.service;
+package ru.b19513.pet_schedule.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

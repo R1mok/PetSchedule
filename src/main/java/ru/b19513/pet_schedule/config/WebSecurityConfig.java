@@ -8,7 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import ru.b19513.pet_schedule.service.UserSecurityService;
+import ru.b19513.pet_schedule.service.impl.UserSecurityService;
 
 @Configuration
 @EnableWebSecurity
@@ -30,11 +30,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/users/checkLogin/**",
     };
 
-    private final UserSecurityService userService;
+    private final UserSecurityService userSecurityService;
 
     @Autowired
     public WebSecurityConfig(UserSecurityService userService) {
-        this.userService = userService;
+        this.userSecurityService = userService;
     }
 
     @Bean
@@ -50,12 +50,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(AUTH_WHITELIST).permitAll()
                 .antMatchers("/users/register").not().fullyAuthenticated()
                 .anyRequest().authenticated()
-                .and().httpBasic()
-                .and().sessionManagement().disable();
+                .and().httpBasic();
     }
 
     @Autowired
     protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userService).passwordEncoder(bCryptPasswordEncoder());
+        auth.userDetailsService(userSecurityService).passwordEncoder(bCryptPasswordEncoder());
     }
 }
