@@ -10,15 +10,11 @@ import ru.b19513.pet_schedule.controller.entity.StatusDTO;
 import ru.b19513.pet_schedule.exceptions.NotFoundException;
 import ru.b19513.pet_schedule.exceptions.WrongNotificationClassException;
 import ru.b19513.pet_schedule.repository.*;
-import ru.b19513.pet_schedule.repository.entity.Notification;
-import ru.b19513.pet_schedule.repository.entity.NotificationSchedule;
-import ru.b19513.pet_schedule.repository.entity.NotificationTimeout;
-import ru.b19513.pet_schedule.repository.entity.ScheduleTime;
+import ru.b19513.pet_schedule.repository.entity.*;
 import ru.b19513.pet_schedule.service.NotificationService;
 import ru.b19513.pet_schedule.service.mapper.NotificationMapper;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.chrono.ChronoLocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -131,7 +127,11 @@ public class NotificationServiceImpl implements NotificationService {
             if (notification instanceof NotificationSchedule) {
                 var notif = (NotificationSchedule) notification;
                 var times = notif.getTimes();
-                var lastTime = notificationNoteRepository.findByNotificationIdAndUser(notif.getId(), user).getLastTime();
+                var notificationNote = notificationNoteRepository.findByNotificationIdAndUser(notif.getId(), user);
+                LocalDateTime lastTime;
+                if (notificationNote.isEmpty()){
+                    lastTime = LocalDateTime.MIN;
+                } else lastTime = notificationNote.get().getLastTime();
                 for (var time : times) {
                     if (time.getNotifTime().isBefore(LocalTime.now()) && time.getNotifTime().isAfter(LocalTime.from(lastTime))) {
                         resultNotificationList.add(notificationMapper.entityToDTO(notif));
@@ -156,7 +156,11 @@ public class NotificationServiceImpl implements NotificationService {
     public StatusDTO setTimeInNotificationNote(long userId, List<Long> notificationsId) {
         var user = userRepository.findById(userId).orElseThrow(NotFoundException::new);
         for (var notifId : notificationsId) {
-            var notifNote = notificationNoteRepository.findByNotificationIdAndUser(notifId, user);
+            var notifNote = notificationNoteRepository.findByNotificationIdAndUser(notifId, user)
+                    .orElse(NotificationNote.builder()
+                            .user(user)
+                            .notification(notificationRepository.findById(notifId).orElseThrow(NotFoundException::new))
+                            .build());
             notifNote.setLastTime(LocalDateTime.now());
             notificationNoteRepository.save(notifNote);
         }
