@@ -2,21 +2,18 @@ package ru.b19513.pet_schedule.controller;
 
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ru.b19513.pet_schedule.controller.entity.NotificationDTO;
 import ru.b19513.pet_schedule.controller.entity.NotificationScheduleDTO;
 import ru.b19513.pet_schedule.controller.entity.NotificationTimeoutDTO;
 import ru.b19513.pet_schedule.controller.entity.StatusDTO;
-import ru.b19513.pet_schedule.repository.entity.NotificationTimeout;
+import ru.b19513.pet_schedule.repository.entity.User;
 import ru.b19513.pet_schedule.service.NotificationService;
 
 import java.time.LocalTime;
 import java.util.List;
-
-import static org.springframework.http.ResponseEntity.ok;
-import static ru.b19513.pet_schedule.consts.Consts.NOT_IMPLEMENTED;
 
 @RestController
 @RequestMapping("/notifications")
@@ -58,8 +55,9 @@ public class NotificationController {
     }
 
     @ApiOperation(value = "Показать напоминания.")
-    @GetMapping("/{userId}")
-    public ResponseEntity<List<NotificationDTO>> showNotification(@PathVariable long userId){
+    @GetMapping("/")
+    public ResponseEntity<List<NotificationDTO>> showNotification(Authentication auth){
+        var userId = ((User)auth.getDetails()).getId();
         var notificationList = notificationService.showNotification(userId);
         return ResponseEntity.ok(notificationList);
     }
@@ -73,7 +71,8 @@ public class NotificationController {
 
     @ApiOperation(value = "Проставить текущее время в напоминаниях, которые уже были показаны.")
     @PatchMapping("/setTime/{userId}")
-    public ResponseEntity<StatusDTO> setTimeInNotificationNote(@PathVariable long userId, @RequestParam List<Long> notificationsId){
+    public ResponseEntity<StatusDTO> setTimeInNotificationNote(Authentication auth, @RequestParam List<Long> notificationsId){
+        var userId = ((User)auth.getDetails()).getId();
         var status = notificationService.setTimeInNotificationNote(userId, notificationsId);
         return ResponseEntity.ok(status);
     }
