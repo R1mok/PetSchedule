@@ -4,19 +4,22 @@ import ru.b19513.pet_schedule.controller.entity.GroupDTO;
 import ru.b19513.pet_schedule.controller.entity.InvitationDTO;
 import ru.b19513.pet_schedule.controller.entity.StatusDTO;
 import ru.b19513.pet_schedule.controller.entity.UserDTO;
+import ru.b19513.pet_schedule.repository.entity.User;
 
 import java.util.Collection;
+import java.util.List;
 
-public interface UserService {
+public interface UserService{
     UserDTO signInNewUser(String login, String pass, String name);
 
-    UserDTO updateUser(UserDTO user);
+    UserDTO updateUser(User user, UserDTO userDTO);
 
-    Collection<InvitationDTO> getInvitationByUserId(long id);
+    Collection<InvitationDTO> getInvitation(User user);
 
-    GroupDTO acceptInvintation(long userId, long groupId);
+    GroupDTO acceptInvintation(User user, long groupId);
 
     StatusDTO isLoginFree(String login);
 
-    UserDTO getUser(long id);
+    List<UserDTO> findUsersByLogin(String login);
+    UserDTO getUser(User user);
 }

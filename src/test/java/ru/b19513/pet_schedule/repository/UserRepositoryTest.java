@@ -22,14 +22,14 @@ class UserRepositoryTest {
                 .login("Jawa")
                 .name("Джава")
                 .gender(Gender.MALE)
-                .passwordHash(new byte[]{42, 43})
+                .password("42")
                 .about("Поделил на ноль")
                 .build();
         val U2 = User.builder()
                 .login("vantuz")
                 .name("Иванесса")
                 .gender(Gender.FEMALE)
-                .passwordHash(new byte[]{44, 45})
+                .password("43")
                 .build();
         repo.save(U1);
         repo.save(U2);

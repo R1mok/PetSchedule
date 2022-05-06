@@ -2,7 +2,6 @@ package ru.b19513.pet_schedule.controller;
 
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +21,7 @@ import java.util.Collection;
 public class PetsController {
 
     private final PetService petService;
+
     @Autowired
     public PetsController(PetService petService) {
         this.petService = petService;
@@ -33,28 +33,28 @@ public class PetsController {
                                             @RequestParam String description,
                                             @RequestParam Gender gender, @RequestParam PetType petType) {
         PetDTO petDTO = petService.createPet(groupId, name, description, gender, petType);
-        return new ResponseEntity<>(petDTO, HttpStatus.OK);
+        return ResponseEntity.ok(petDTO);
     }
 
     @ApiOperation(value = "Обновить сведения о питомце")
     @PatchMapping("/")
     public ResponseEntity<PetDTO> updatePet(@RequestParam PetDTO petDTOInput) {
         PetDTO petDTO = petService.updatePet(petDTOInput);
-        return new ResponseEntity<>(petDTO, HttpStatus.OK);
+        return ResponseEntity.ok(petDTO);
     }
 
     @ApiOperation(value = "Получить список питомцев по id группы")
     @GetMapping("/byGroup/{groupId}")
     public ResponseEntity<Collection<PetDTO>> getPets(@PathVariable long groupId) {
         Collection<PetDTO> PetDTOCollection = petService.getPets(groupId);
-        return new ResponseEntity<>(PetDTOCollection, HttpStatus.OK);
+        return ResponseEntity.ok(PetDTOCollection);
     }
 
     @ApiOperation(value = "Удалить питомца и все связанные с ним напоминания и записи")
     @DeleteMapping("/{petId}")
     public ResponseEntity<StatusDTO> deletePet(@PathVariable long petId) {
         StatusDTO statusDTO = petService.deletePet(petId);
-        return new ResponseEntity<>(statusDTO, HttpStatus.OK);
+        return ResponseEntity.ok(statusDTO);
     }
 
     @ApiOperation(value = "Создать запись о кормлении")
@@ -63,22 +63,22 @@ public class PetsController {
                                                        @RequestParam String comment){
         var userId = ((User)auth.getDetails()).getId();
         FeedNoteDTO feedNoteDTO = petService.createFeedNote(petId, userId, comment);
-        return new ResponseEntity<>(feedNoteDTO, HttpStatus.OK);
+        return ResponseEntity.ok(feedNoteDTO);
     }
 
     @ApiOperation(value = "Получить список записей о кормлении")
     @GetMapping("/{petId}/feedNotes")
-    public ResponseEntity<Collection<FeedNoteDTO>> getFeedNotes (@PathVariable long petId){
+    public ResponseEntity<Collection<FeedNoteDTO>> getFeedNotes(@PathVariable long petId) {
         Collection<FeedNoteDTO> feedNoteDTOCollection = petService.getFeedNotes(petId);
-        return new ResponseEntity<>(feedNoteDTOCollection, HttpStatus.OK);
+        return ResponseEntity.ok(feedNoteDTOCollection);
     }
 
     @ApiOperation(value = "Найти записи о кормежках по времени и дате")
     @GetMapping("/{petId}/feedNotesBetweenDates")
-    public ResponseEntity<Collection<FeedNoteDTO>> findFeedNotesByDate (@PathVariable long petId,
-                                                                        @RequestParam LocalDateTime from,
-                                                                        @RequestParam LocalDateTime to){
+    public ResponseEntity<Collection<FeedNoteDTO>> findFeedNotesByDate(@PathVariable long petId,
+                                                                       @RequestParam LocalDateTime from,
+                                                                       @RequestParam LocalDateTime to) {
         Collection<FeedNoteDTO> feedNoteDTOCollection = petService.findFeedNotesByDate(petId, from, to);
-        return new ResponseEntity<>(feedNoteDTOCollection, HttpStatus.OK);
+        return ResponseEntity.ok(feedNoteDTOCollection);
     }
 }

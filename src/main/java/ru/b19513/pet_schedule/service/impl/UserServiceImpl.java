@@ -1,7 +1,13 @@
 package ru.b19513.pet_schedule.service.impl;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.b19513.pet_schedule.controller.entity.GroupDTO;
 import ru.b19513.pet_schedule.controller.entity.InvitationDTO;
@@ -19,11 +25,6 @@ import ru.b19513.pet_schedule.service.mapper.GroupMapper;
 import ru.b19513.pet_schedule.service.mapper.InvitationMapper;
 import ru.b19513.pet_schedule.service.mapper.UserMapper;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
-
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -33,35 +34,37 @@ public class UserServiceImpl implements UserService {
     private final EnumMapper enumMapper;
     private final UserRepository userRepository;
     private final InvitationRepository invitationRepository;
-    private final MessageDigest digest;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserMapper userMapper, InvitationMapper invitationMapper, GroupMapper groupMapper, EnumMapper enumMapper, UserRepository userRepository, InvitationRepository invitationRepository) throws NoSuchAlgorithmException {
+    public UserServiceImpl(UserMapper userMapper, InvitationMapper invitationMapper, GroupMapper groupMapper,
+            EnumMapper enumMapper, UserRepository userRepository, InvitationRepository invitationRepository,
+            BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userMapper = userMapper;
         this.invitationMapper = invitationMapper;
         this.groupMapper = groupMapper;
         this.enumMapper = enumMapper;
         this.userRepository = userRepository;
         this.invitationRepository = invitationRepository;
-        digest = MessageDigest.getInstance("SHA-256");
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Override
     public UserDTO signInNewUser(String login, String pass, String name) {
-        if (userRepository.existsByLogin(login))
+        if (userRepository.existsByLogin(login)) {
             throw new LoginBusyException();
+        }
         var user = User.builder()
                 .login(login)
                 .name(name)
-                .passwordHash(digest.digest(pass.getBytes(StandardCharsets.UTF_8)))
+                .password(bCryptPasswordEncoder.encode(pass))
                 .build();
         return userMapper.entityToDTO(userRepository.save(user));
 
     }
 
     @Override
-    public UserDTO updateUser(UserDTO userDTO) {
-        var user = userRepository.findById(userDTO.getId()).orElseThrow(NotFoundException::new);
+    public UserDTO updateUser(User user, UserDTO userDTO) {
         if (userDTO.getAbout() != null) {
             user.setAbout(userDTO.getAbout());
         }
@@ -75,15 +78,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Collection<InvitationDTO> getInvitationByUserId(long id) {
-        var user = userRepository.findById(id).orElseThrow(NotFoundException::new);
+    public Collection<InvitationDTO> getInvitation(User user) {
         return invitationMapper.entityToDTO(user.getInvitations());
     }
 
     @Override
-    public GroupDTO acceptInvintation(long userId, long groupId) {
-        var invitation = invitationRepository.findById(new Invitation.Key(userId, groupId)).orElseThrow(NotFoundException::new);
-        var user = invitation.getUser();
+    public GroupDTO acceptInvintation(User user, long groupId) {
+        var invitation = invitationRepository.findById(new Invitation.Key(user.getId(), groupId))
+                .orElseThrow(NotFoundException::new);
         var group = invitation.getGroup();
         user.getGroups().add(group);
         userRepository.save(user);
@@ -100,7 +102,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO getUser(long id) {
-        return userMapper.entityToDTO(userRepository.findById(id).orElseThrow(NotFoundException::new));
+    public List<UserDTO> findUsersByLogin(String login) {
+        return userMapper.entityToDTOConf(userRepository.findTop5ByLoginIsStartingWith(login));
+    }
+
+    @Override
+    public UserDTO getUser(User user) {
+        return userMapper.entityToDTO(user);
     }
 }

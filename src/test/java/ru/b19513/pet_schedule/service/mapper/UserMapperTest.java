@@ -16,8 +16,8 @@ class UserMapperTest {
     @Test
     void entityToDTO() {
         val users = List.of(
-                User.builder().id(0).login("Vantuz").name("Иван").gender(Gender.MALE).passwordHash(new byte[]{42, 87, 8}).build(),
-                User.builder().id(1).login("Jawa").about("Поделил на ноль").name("Джава").gender(Gender.MALE).passwordHash(new byte[]{42}).build()
+                User.builder().id(0).login("Vantuz").name("Иван").gender(Gender.MALE).password("42").build(),
+                User.builder().id(1).login("Jawa").about("Поделил на ноль").name("Джава").gender(Gender.MALE).password("43").build()
         );
         val excepted = List.of(
                 UserDTO.builder().id(0).login("Vantuz").name("Иван").gender(ru.b19513.pet_schedule.controller.entity.enums.Gender.MALE).build(),
