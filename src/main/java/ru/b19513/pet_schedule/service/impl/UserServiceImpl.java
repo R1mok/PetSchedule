@@ -1,6 +1,7 @@
 package ru.b19513.pet_schedule.service.impl;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -63,8 +64,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO updateUser(UserDTO userDTO) {
-        var user = userRepository.findById(userDTO.getId()).orElseThrow(NotFoundException::new);
+    public UserDTO updateUser(User user, UserDTO userDTO) {
         if (userDTO.getAbout() != null) {
             user.setAbout(userDTO.getAbout());
         }
@@ -78,14 +78,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Collection<InvitationDTO> getInvitation(String login) {
-        var user = userRepository.findByLogin(login).orElseThrow(NotFoundException::new);
+    public Collection<InvitationDTO> getInvitation(User user) {
         return invitationMapper.entityToDTO(user.getInvitations());
     }
 
     @Override
-    public GroupDTO acceptInvintation(String login, long groupId) {
-        var user = userRepository.findByLogin(login).orElseThrow(NotFoundException::new);;
+    public GroupDTO acceptInvintation(User user, long groupId) {
         var invitation = invitationRepository.findById(new Invitation.Key(user.getId(), groupId))
                 .orElseThrow(NotFoundException::new);
         var group = invitation.getGroup();
@@ -104,7 +102,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO getUserByLogin(String login) {
-        return userMapper.entityToDTO(userRepository.findByLogin(login).orElseThrow(NotFoundException::new));
+    public List<UserDTO> findUsersByLogin(String login) {
+        return userMapper.entityToDTOConf(userRepository.findTop5ByLoginIsStartingWith(login));
+    }
+
+    @Override
+    public UserDTO getUser(User user) {
+        return userMapper.entityToDTO(user);
     }
 }

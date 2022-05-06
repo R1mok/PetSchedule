@@ -2,16 +2,17 @@ package ru.b19513.pet_schedule.service;
 
 import ru.b19513.pet_schedule.controller.entity.GroupDTO;
 import ru.b19513.pet_schedule.controller.entity.StatusDTO;
+import ru.b19513.pet_schedule.repository.entity.User;
 
 public interface GroupService {
 
-    GroupDTO createGroup(String senderLogin, String name);
+    GroupDTO createGroup(User owner, String name);
 
-    GroupDTO updateGroup(String senderLogin, GroupDTO group);
+    GroupDTO updateGroup(User owner, GroupDTO group);
 
-    StatusDTO inviteUser(String senderLogin,long groupId, long userId);
+    StatusDTO inviteUser(User owner,long groupId, long userId);
 
-    GroupDTO kickUser(String senderLogin, long groupId, long userId);
+    GroupDTO kickUser(User owner, long groupId, long userId);
 
-    StatusDTO deleteGroup(long groupId, String ownerLogin);
+    StatusDTO deleteGroup(long groupId, User owner);
 }
