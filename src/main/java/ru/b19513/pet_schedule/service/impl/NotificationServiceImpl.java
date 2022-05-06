@@ -27,18 +27,16 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationNoteRepository notificationNoteRepository;
     private final NotificationRepository notificationRepository;
     private final GroupRepository groupRepository;
-    private final UserRepository userRepository;
     private final PetRepository petRepository;
     private final FeedNoteRepository feedNoteRepository;
     private final NotificationMapper notificationMapper;
 
     @Autowired
-    public NotificationServiceImpl(NotificationNoteRepository notificationNoteRepository, NotificationRepository notificationRepository, GroupRepository groupRepository, UserRepository userRepository, PetRepository petRepository, FeedNoteRepository feedNoteRepository, NotificationMapper notificationMapper) {
+    public NotificationServiceImpl(NotificationNoteRepository notificationNoteRepository, NotificationRepository notificationRepository, GroupRepository groupRepository, PetRepository petRepository, FeedNoteRepository feedNoteRepository, NotificationMapper notificationMapper) {
 
         this.notificationNoteRepository = notificationNoteRepository;
         this.notificationRepository = notificationRepository;
         this.groupRepository = groupRepository;
-        this.userRepository = userRepository;
         this.petRepository = petRepository;
         this.feedNoteRepository = feedNoteRepository;
         this.notificationMapper = notificationMapper;
@@ -101,8 +99,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public List<NotificationDTO> showNotification(long userId) {
-        var user = userRepository.findById(userId).orElseThrow(NotFoundException::new);
+    public List<NotificationDTO> showNotification(User user) {
         var groupSet = user.getGroups();
         List<Notification> notificationList = new ArrayList<>();
         groupSet.forEach(g -> notificationList.addAll(g.getNotificationList()));
@@ -123,7 +120,7 @@ public class NotificationServiceImpl implements NotificationService {
                 if (alarmTime.isBefore(ChronoLocalDateTime.from(LocalTime.now())) && !notTimeToSend) {
                     resultNotificationList.add(notificationMapper.entityToDTO(notif));
                 }
-            }
+            } else
             if (notification instanceof NotificationSchedule) {
                 var notif = (NotificationSchedule) notification;
                 var times = notif.getTimes();
@@ -153,8 +150,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public StatusDTO setTimeInNotificationNote(long userId, List<Long> notificationsId) {
-        var user = userRepository.findById(userId).orElseThrow(NotFoundException::new);
+    public StatusDTO setTimeInNotificationNote(User user, List<Long> notificationsId) {
         for (var notifId : notificationsId) {
             var notifNote = notificationNoteRepository.findByNotificationIdAndUser(notifId, user)
                     .orElse(NotificationNote.builder()

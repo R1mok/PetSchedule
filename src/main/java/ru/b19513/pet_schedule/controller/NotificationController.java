@@ -57,8 +57,8 @@ public class NotificationController {
     @ApiOperation(value = "Показать напоминания.")
     @GetMapping("/")
     public ResponseEntity<List<NotificationDTO>> showNotification(Authentication auth){
-        var userId = ((User)auth.getDetails()).getId();
-        var notificationList = notificationService.showNotification(userId);
+        var user = ((User)auth.getDetails());
+        var notificationList = notificationService.showNotification(user);
         return ResponseEntity.ok(notificationList);
     }
 
@@ -72,8 +72,8 @@ public class NotificationController {
     @ApiOperation(value = "Проставить текущее время в напоминаниях, которые уже были показаны.")
     @PatchMapping("/setTime/{userId}")
     public ResponseEntity<StatusDTO> setTimeInNotificationNote(Authentication auth, @RequestParam List<Long> notificationsId){
-        var userId = ((User)auth.getDetails()).getId();
-        var status = notificationService.setTimeInNotificationNote(userId, notificationsId);
+        var user = ((User)auth.getDetails());
+        var status = notificationService.setTimeInNotificationNote(user, notificationsId);
         return ResponseEntity.ok(status);
     }
 }
