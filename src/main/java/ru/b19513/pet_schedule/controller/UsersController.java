@@ -2,7 +2,6 @@ package ru.b19513.pet_schedule.controller;
 
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -32,48 +31,48 @@ public class UsersController {
     public ResponseEntity<UserDTO> register(@RequestParam String login, @RequestParam String pass,
                                             @RequestParam String name) {
         UserDTO userDTO = userService.signInNewUser(login, pass, name);
-        return new ResponseEntity<>(userDTO, HttpStatus.OK);
+        return ResponseEntity.ok(userDTO);
     }
 
     @ApiOperation(value = "Изменение данных пользователя")
     @PatchMapping("/")
     public ResponseEntity<UserDTO> updateUser(Authentication auth, @RequestParam UserDTO user) {
         UserDTO userDTO = userService.updateUser((User) auth.getPrincipal(), user);
-        return new ResponseEntity<>(userDTO, HttpStatus.OK);
+        return ResponseEntity.ok(userDTO);
     }
 
     @ApiOperation(value = "Получить список активных приглашений пользователя по id")
     @GetMapping("/invitations")
     public ResponseEntity<Collection<InvitationDTO>> getInvitations(Authentication auth) {
         Collection<InvitationDTO> invitationDTOCollection = userService.getInvitation((User) auth.getPrincipal());
-        return new ResponseEntity<>(invitationDTOCollection, HttpStatus.OK);
+        return ResponseEntity.ok(invitationDTOCollection);
     }
 
     @ApiOperation(value = "Принять приглашение")
     @PutMapping("/")
     public ResponseEntity<GroupDTO> acceptInvitation(Authentication auth, @RequestParam long groupId) {
         GroupDTO groupDTO = userService.acceptInvintation((User) auth.getPrincipal(), groupId);
-        return new ResponseEntity<>(groupDTO, HttpStatus.OK);
+        return ResponseEntity.ok(groupDTO);
     }
 
     @ApiOperation(value = "Проверить свободность логина")
     @GetMapping("/checkLogin/{login}")
     public ResponseEntity<StatusDTO> isLoginFree(@PathVariable String login) {
         StatusDTO loginFree = userService.isLoginFree(login);
-        return new ResponseEntity<>(loginFree, HttpStatus.OK);
+        return ResponseEntity.ok(loginFree);
     }
 
     @ApiOperation(value = "Получение данных пользователя")
     @GetMapping("/")
     public ResponseEntity<UserDTO> getUser(Authentication auth) {
         UserDTO userDTO = userService.getUser((User) auth.getPrincipal());
-        return new ResponseEntity<>(userDTO, HttpStatus.OK);
+        return ResponseEntity.ok(userDTO);
     }
 
     @ApiOperation(value = "Получение пяти пользователей с логином, начинающимся на переданное слово")
     @GetMapping("/")
     public ResponseEntity<List<UserDTO>> getUsersByLogin(@RequestParam String loginBegining) {
         List<UserDTO> userDTO = userService.findUsersByLogin(loginBegining);
-        return new ResponseEntity<>(userDTO, HttpStatus.OK);
+        return ResponseEntity.ok(userDTO);
     }
 }
