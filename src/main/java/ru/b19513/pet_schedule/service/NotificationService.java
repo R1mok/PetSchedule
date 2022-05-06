@@ -4,6 +4,7 @@ import ru.b19513.pet_schedule.controller.entity.NotificationDTO;
 import ru.b19513.pet_schedule.controller.entity.NotificationScheduleDTO;
 import ru.b19513.pet_schedule.controller.entity.NotificationTimeoutDTO;
 import ru.b19513.pet_schedule.controller.entity.StatusDTO;
+import ru.b19513.pet_schedule.repository.entity.User;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -17,9 +18,9 @@ public interface NotificationService {
 
     NotificationTimeoutDTO updateNotificationTimeout(NotificationTimeoutDTO notif);
 
-    List<NotificationDTO> showNotification(long userId);
+    List<NotificationDTO> showNotification(User user);
 
     StatusDTO deleteNotification( long notifId);
 
-    StatusDTO setTimeInNotificationNote(long userId, List<Long> notificationsId);
+    StatusDTO setTimeInNotificationNote(User user, List<Long> notificationsId);
 }

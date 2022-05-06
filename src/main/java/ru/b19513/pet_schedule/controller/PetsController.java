@@ -3,12 +3,14 @@ package ru.b19513.pet_schedule.controller;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ru.b19513.pet_schedule.controller.entity.FeedNoteDTO;
 import ru.b19513.pet_schedule.controller.entity.PetDTO;
 import ru.b19513.pet_schedule.controller.entity.StatusDTO;
 import ru.b19513.pet_schedule.controller.entity.enums.Gender;
 import ru.b19513.pet_schedule.controller.entity.enums.PetType;
+import ru.b19513.pet_schedule.repository.entity.User;
 import ru.b19513.pet_schedule.service.PetService;
 
 import java.time.LocalDateTime;
@@ -57,9 +59,9 @@ public class PetsController {
 
     @ApiOperation(value = "Создать запись о кормлении")
     @PostMapping("/createFeedNote")
-    public ResponseEntity<FeedNoteDTO> createFeedNote(@RequestParam long petId,
-                                                      @RequestParam long userId,
-                                                      @RequestParam String comment) {
+    public ResponseEntity<FeedNoteDTO> createFeedNote (Authentication auth, @RequestParam long petId,
+                                                       @RequestParam String comment){
+        var userId = ((User)auth.getDetails()).getId();
         FeedNoteDTO feedNoteDTO = petService.createFeedNote(petId, userId, comment);
         return ResponseEntity.ok(feedNoteDTO);
     }
