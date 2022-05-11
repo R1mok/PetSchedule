@@ -44,8 +44,10 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public NotificationTimeoutDTO createNotificationTimeout(long groupId, long petId, String comment, long elapsed) {
-        var group = groupRepository.findById(groupId).orElseThrow(NotFoundException::new);
-        var pet = petRepository.findById(petId).orElseThrow(NotFoundException::new);
+        var group = groupRepository.findById(groupId)
+                .orElseThrow(new NotFoundException("Group with group id " + groupId + " not found"));
+        var pet = petRepository.findById(petId)
+                .orElseThrow(new NotFoundException("Pet with pet id " + petId + " not found"));
         var notificationTimeout = NotificationTimeout.builder()
                 .elapsed(elapsed)
                 .group(group)
@@ -61,8 +63,10 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public NotificationScheduleDTO createNotificationSchedule(long groupId, long petId, String comment, List<LocalTime> times) {
-        var group = groupRepository.findById(groupId).orElseThrow(NotFoundException::new);
-        var pet = petRepository.findById(petId).orElseThrow(NotFoundException::new);
+        var group = groupRepository.findById(groupId)
+                .orElseThrow(new NotFoundException("Group with group id " + groupId + " not found"));
+        var pet = petRepository.findById(petId)
+                .orElseThrow(new NotFoundException("Pet with pet id " + petId + " not found"));
         var scheduleTimeList = new ArrayList<ScheduleTime>();
         for (LocalTime time : times) {
             scheduleTimeList.add(ScheduleTime.builder().notifTime(time).build());
@@ -82,20 +86,24 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public NotificationScheduleDTO updateNotificationSchedule(NotificationScheduleDTO notif) {
-        var notificationSchedule = notificationRepository.findById(notif.getId()).orElseThrow(NotFoundException::new);
+        var notificationSchedule = notificationRepository.findById(notif.getId())
+                .orElseThrow(new NotFoundException("Notification with notification id " + notif.getId() + " not found"));
         if (notificationSchedule instanceof NotificationSchedule) {
             notificationMapper.updateEntity((NotificationSchedule) notificationSchedule, notif);
             return notificationMapper.entityToDTO((NotificationSchedule) notificationRepository.save(notificationSchedule));
-        } else throw new WrongNotificationClassException();
+        } else
+            throw new WrongNotificationClassException("Found a notification of a different type with notification id " + notificationSchedule.getId());
     }
 
     @Override
     public NotificationTimeoutDTO updateNotificationTimeout(NotificationTimeoutDTO notif) {
-        var notificationTimeout = notificationRepository.findById(notif.getId()).orElseThrow(NotFoundException::new);
+        var notificationTimeout = notificationRepository.findById(notif.getId())
+                .orElseThrow(new NotFoundException("Notification with notification id " + notif.getId() + " not found"));
         if (notificationTimeout instanceof NotificationTimeout) {
             notificationMapper.updateEntity((NotificationTimeout) notificationTimeout, notif);
             return notificationMapper.entityToDTO((NotificationTimeout) notificationRepository.save(notificationTimeout));
-        } else throw new WrongNotificationClassException();
+        } else
+            throw new WrongNotificationClassException("Found a notification of a different type with notification id " + notificationTimeout.getId());
     }
 
     @Override
@@ -120,13 +128,12 @@ public class NotificationServiceImpl implements NotificationService {
                 if (alarmTime.isBefore(ChronoLocalDateTime.from(LocalTime.now())) && !notTimeToSend) {
                     resultNotificationList.add(notificationMapper.entityToDTO(notif));
                 }
-            } else
-            if (notification instanceof NotificationSchedule) {
+            } else if (notification instanceof NotificationSchedule) {
                 var notif = (NotificationSchedule) notification;
                 var times = notif.getTimes();
                 var notificationNote = notificationNoteRepository.findByNotificationIdAndUser(notif.getId(), user);
                 LocalDateTime lastTime;
-                if (notificationNote.isEmpty()){
+                if (notificationNote.isEmpty()) {
                     lastTime = LocalDateTime.MIN;
                 } else lastTime = notificationNote.get().getLastTime();
                 for (var time : times) {
@@ -141,7 +148,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public StatusDTO deleteNotification(long notifId) {
-        var notification = notificationRepository.findById(notifId).orElseThrow(NotFoundException::new);
+        var notification = notificationRepository.findById(notifId)
+                .orElseThrow(new NotFoundException("Notification with notification id " + notifId + " not found"));
         notificationRepository.delete(notification);
         return StatusDTO.builder()
                 .status(HttpStatus.OK)
@@ -155,7 +163,8 @@ public class NotificationServiceImpl implements NotificationService {
             var notifNote = notificationNoteRepository.findByNotificationIdAndUser(notifId, user)
                     .orElse(NotificationNote.builder()
                             .user(user)
-                            .notification(notificationRepository.findById(notifId).orElseThrow(NotFoundException::new))
+                            .notification(notificationRepository.findById(notifId)
+                                    .orElseThrow(new NotFoundException("Notification with notification id " + notifId + " not found")))
                             .build());
             notifNote.setLastTime(LocalDateTime.now());
             notificationNoteRepository.save(notifNote);

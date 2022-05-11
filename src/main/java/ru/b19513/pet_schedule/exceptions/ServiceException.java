@@ -4,14 +4,13 @@ import lombok.*;
 
 import java.util.function.Supplier;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@RequiredArgsConstructor
 @Setter
 @Getter
 public class ServiceException extends RuntimeException implements Supplier<ServiceException> {
     private String message;
-
+    public ServiceException(String mes){
+        this.message = mes;
+    }
     @Override
     public ServiceException get() {
         return this;

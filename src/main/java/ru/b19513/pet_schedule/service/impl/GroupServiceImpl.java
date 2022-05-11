@@ -47,9 +47,10 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public GroupDTO updateGroup(User owner, GroupDTO groupDTO) {
-        var group = groupRepository.findById(groupDTO.getId()).orElseThrow(NotFoundException::new);
+        var group = groupRepository.findById(groupDTO.getId()).
+                orElseThrow(new NotFoundException("Group with group id " + groupDTO.getId() + " not found"));
         if (group.getOwner().getId() != owner.getId()) {
-            throw new NotPermittedException();
+            throw new NotPermittedException("User with id " + owner.getId() + " does not have permission");
         }
         groupMapper.updateEntity(group, groupDTO);
         return groupMapper.entityToDTO(groupRepository.save(group));
@@ -57,12 +58,14 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public StatusDTO inviteUser(User owner, long groupId, long userId) {
-        var group = groupRepository.findById(groupId).orElseThrow(NotFoundException::new);
+        var group = groupRepository.findById(groupId)
+                .orElseThrow(new NotFoundException("Group with group id " + groupId + " not found"));
         if (group.getOwner().getId() != owner.getId()) // только создатель группы может рассылать приглашения
         {
-            throw new NotPermittedException();
+            throw new NotPermittedException("User with id " + owner.getId() + " does not have permission");
         }
-        var user = userRepository.findById(userId).orElseThrow(NotFoundException::new);
+        var user = userRepository.findById(userId)
+                .orElseThrow(new NotFoundException("User with user id " + userId + " not found"));
         // Если приглашение уже есть в БД - ничего не поменяется
         var inv = new Invitation(user, group);
         invitationRepository.save(inv);
@@ -75,20 +78,23 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public GroupDTO kickUser(User owner, long groupId, long userId) {
-        var group = groupRepository.findById(groupId).orElseThrow(NotFoundException::new);
+        var group = groupRepository.findById(groupId)
+                .orElseThrow(new NotFoundException("Group with group id " + groupId + " not found"));
         if (group.getOwner().getId() != owner.getId()) {
-            throw new NotPermittedException();
+            throw new NotPermittedException("User with id " + owner.getId() + " does not have permission");
         }
-        var user = userRepository.findById(userId).orElseThrow(NotFoundException::new);
+        var user = userRepository.findById(userId)
+                .orElseThrow(new NotFoundException("User with user id " + userId + " not found"));
         group.getUsers().remove(user);
         return groupMapper.entityToDTO(groupRepository.save(group));
     }
 
     @Override
     public StatusDTO deleteGroup(long groupId, User owner) {
-        var group = groupRepository.findById(groupId).orElseThrow(NotFoundException::new);
+        var group = groupRepository.findById(groupId)
+                .orElseThrow(new NotFoundException("Group with group id " + groupId + " not found"));
         if (group.getOwner().getId() != owner.getId()) {
-            throw new NotPermittedException();
+            throw new NotPermittedException("User with id " + owner.getId() + " does not have permission");
         }
         groupRepository.delete(group);
         return StatusDTO.builder()

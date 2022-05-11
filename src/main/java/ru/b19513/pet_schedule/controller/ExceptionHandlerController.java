@@ -22,6 +22,7 @@ public class ExceptionHandlerController {
     protected ResponseEntity<StatusDTO> handleLoginBusy(LoginBusyException exception) {
         return new ResponseEntity<>(StatusDTO.builder()
                 .status(HttpStatus.BAD_REQUEST)
-                .description(exception.getMessage()).build(), HttpStatus.BAD_REQUEST);
+                .description(exception.getMessage())
+                .build(), HttpStatus.BAD_REQUEST);
     }
 }

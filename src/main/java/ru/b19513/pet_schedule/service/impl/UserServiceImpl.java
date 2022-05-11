@@ -86,7 +86,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public GroupDTO acceptInvintation(User user, long groupId) {
         var invitation = invitationRepository.findById(new Invitation.Key(user.getId(), groupId))
-                .orElseThrow(new NotFoundException("Invitation by user id: " + user.getId() + " and group id: " + groupId + "not found"));
+                .orElseThrow(new NotFoundException("Invitation with user id: " + user.getId() + " and group id: " + groupId + "not found"));
         var group = invitation.getGroup();
         user.getGroups().add(group);
         userRepository.save(user);
