@@ -3,6 +3,7 @@ package ru.b19513.pet_schedule.service.impl;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -38,8 +39,8 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     public UserServiceImpl(UserMapper userMapper, InvitationMapper invitationMapper, GroupMapper groupMapper,
-            EnumMapper enumMapper, UserRepository userRepository, InvitationRepository invitationRepository,
-            BCryptPasswordEncoder bCryptPasswordEncoder) {
+                           EnumMapper enumMapper, UserRepository userRepository, InvitationRepository invitationRepository,
+                           BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userMapper = userMapper;
         this.invitationMapper = invitationMapper;
         this.groupMapper = groupMapper;
@@ -52,7 +53,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO signInNewUser(String login, String pass, String name) {
         if (userRepository.existsByLogin(login)) {
-            throw new LoginBusyException();
+            throw new LoginBusyException("Login \"" + login + "\" already exist");
         }
         var user = User.builder()
                 .login(login)
@@ -85,7 +86,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public GroupDTO acceptInvintation(User user, long groupId) {
         var invitation = invitationRepository.findById(new Invitation.Key(user.getId(), groupId))
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(new NotFoundException("Invitation with user id: " + user.getId() + " and group id: " + groupId + "not found"));
         var group = invitation.getGroup();
         user.getGroups().add(group);
         userRepository.save(user);
