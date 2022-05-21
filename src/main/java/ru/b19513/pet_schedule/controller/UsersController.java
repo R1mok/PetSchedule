@@ -70,7 +70,7 @@ public class UsersController {
     }
 
     @ApiOperation(value = "Получение пяти пользователей с логином, начинающимся на переданное слово")
-    @GetMapping("/")
+    @GetMapping("/findByLogin")
     public ResponseEntity<List<UserDTO>> getUsersByLogin(@RequestParam String loginBegining) {
         List<UserDTO> userDTO = userService.findUsersByLogin(loginBegining);
         return ResponseEntity.ok(userDTO);
