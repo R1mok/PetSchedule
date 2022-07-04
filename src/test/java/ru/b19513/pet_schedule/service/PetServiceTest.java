@@ -1,19 +1,16 @@
 package ru.b19513.pet_schedule.service;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.b19513.pet_schedule.controller.entity.enums.Gender;
 import ru.b19513.pet_schedule.controller.entity.enums.PetType;
-import ru.b19513.pet_schedule.repository.*;
-import ru.b19513.pet_schedule.repository.entity.*;
-import javax.transaction.Transactional;
-import java.util.Optional;
-import org.junit.jupiter.api.Assertions;
-import ru.b19513.pet_schedule.service.impl.PetServiceImpl;
+import ru.b19513.pet_schedule.repository.GroupRepository;
+import ru.b19513.pet_schedule.repository.PetRepository;
+import ru.b19513.pet_schedule.repository.entity.Group;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import javax.transaction.Transactional;
 
 @SpringBootTest
 class PetServiceTest {
@@ -32,12 +29,15 @@ class PetServiceTest {
     void createPet() {
         Group group = Group.builder()
                 .name("g1")
-                .id(1L)
                 .build();
         groupRepository.save(group);
-        petService.createPet(1L, "gavs", "desc", Gender.MALE, PetType.DOG);
-        Assertions.assertTrue(groupRepository.findById(1L).get().getPets().contains(petRepository.findById(1L).get()));
-        Assertions.assertEquals(petRepository.findById(1L).get().getGroup(), groupRepository.findById(1L).get());
+        var group1 = groupRepository.findAll().stream().findAny().get();
+        petService.createPet(group1.getId(), "gavs", "desc", Gender.MALE, PetType.DOG);
+        var pet = petRepository.findAll().stream().findAny().get();
+        Assertions.assertTrue(groupRepository.findById(group1.getId()).get().getPets().contains(petRepository.findById(pet.getId()).get()));
+        Assertions.assertEquals(petRepository.findById(pet.getId()).get().getGroup(), groupRepository.findById(group1.getId()).get());
+        groupRepository.delete(group1);
+        petRepository.delete(pet);
     }
     @Test
     void updatePet() {

@@ -13,6 +13,7 @@ import java.util.Set;
 import javax.transaction.Transactional;
 
 @SpringBootTest
+@Transactional
 class GroupServiceTest {
 
     @Autowired
@@ -41,11 +42,14 @@ class GroupServiceTest {
                 .owner(u1)
                 .build();
         userRepository.save(u1);
+        var user = userRepository.findAll().stream().findAny().get();
         groupService.createGroup(u1, "g1");
-        var group = groupRepository.findById(1L).get();
+        var group = groupRepository.findAll().stream().findAny().get();
         Assertions.assertEquals(g1.getName(), group.getName());
         Assertions.assertEquals(u1.getName(), group.getOwner().getName());
-        Assertions.assertTrue(groupRepository.findById(1L).get().getUsers().contains(u1));
+        Assertions.assertTrue(groupRepository.findById(group.getId()).get().getUsers().contains(u1));
+        userRepository.delete(user);
+        groupRepository.delete(group);
     }
 
     @Test
@@ -62,21 +66,24 @@ class GroupServiceTest {
                 .owner(u1)
                 .build();
         userRepository.save(u1);
+        var user1 = userRepository.findAll().stream().findAny().get();
         groupService.createGroup(u1, "g1");
+        var group = groupRepository.findAll().stream().findFirst().get();
         GroupDTO groupDTO = GroupDTO.builder()
-                .id(1L)
+                .id(group.getId())
                 .name("changedD1")
                 .description("changedDesciption")
                 .build();
         groupService.updateGroup(u1, groupDTO);
-        Assertions.assertEquals(groupDTO.getName(), groupRepository.findById(1L).get().getName());
-        Assertions.assertEquals(groupDTO.getDescription(), groupRepository.findById(1L).get().getDescription());
+        Assertions.assertEquals(groupDTO.getName(), groupRepository.findById(group.getId()).get().getName());
+        Assertions.assertEquals(groupDTO.getDescription(), groupRepository.findById(group.getId()).get().getDescription());
+        userRepository.delete(u1);
+        groupRepository.delete(group);
     }
 
     @Test
     @Transactional
     void inviteUser() {
-
         val u1 = User.builder()
                 .login("R1mok")
                 .name("Anton")
@@ -91,12 +98,19 @@ class GroupServiceTest {
                 .build();
         userRepository.save(u1);
         userRepository.save(u2);
+        var listUsers = userRepository.findAll();
+        var user1 = listUsers.get(0);
+        var user2 = listUsers.get(1);
         groupService.createGroup(u1, "g1");
-        groupService.inviteUser(u1, 1L, 2L);
-        userService.acceptInvintation(u2, 1L);
-        Assertions.assertEquals(1, userRepository.findById(2L).get().getGroups().size());
-        Assertions.assertEquals(2, groupRepository.findById(1L).get().getUsers().size());
-        Assertions.assertEquals(Set.of(u1, u2), groupRepository.findById(1L).get().getUsers());
+        var group = groupRepository.findAll().stream().findAny().get();
+        groupService.inviteUser(u1, group.getId(), user2.getId());
+        userService.acceptInvintation(u2, group.getId());
+        Assertions.assertEquals(1, userRepository.findById(user2.getId()).get().getGroups().size());
+        Assertions.assertEquals(2, groupRepository.findById(group.getId()).get().getUsers().size());
+        Assertions.assertEquals(Set.of(u1, u2), groupRepository.findById(group.getId()).get().getUsers());
+        groupRepository.delete(group);
+        userRepository.delete(user1);
+        userRepository.delete(user2);
     }
 
     @Test
@@ -116,14 +130,21 @@ class GroupServiceTest {
                 .build();
         userRepository.save(u1);
         userRepository.save(u2);
+        var listUsers = userRepository.findAll();
+        var user1 = listUsers.get(0);
+        var user2 = listUsers.get(1);
         groupService.createGroup(u1, "g1");
-        groupService.inviteUser(u1, 1L, 2L);
-        userService.acceptInvintation(u2, 1L);
-        Assertions.assertEquals(2, groupRepository.findById(1L).get().getUsers().size());
-        Assertions.assertEquals(Set.of(u1, u2), groupRepository.findById(1L).get().getUsers());
-        groupService.kickUser(u1, 1L, 2L);
-        Assertions.assertEquals(1, groupRepository.findById(1L).get().getUsers().size());
-        Assertions.assertEquals(Set.of(u1), groupRepository.findById(1L).get().getUsers());
+        var group = groupRepository.findAll().stream().findAny().get();
+        groupService.inviteUser(u1, group.getId(), user2.getId());
+        userService.acceptInvintation(u2, group.getId());
+        Assertions.assertEquals(2, groupRepository.findById(group.getId()).get().getUsers().size());
+        Assertions.assertEquals(Set.of(u1, u2), groupRepository.findById(group.getId()).get().getUsers());
+        groupService.kickUser(u1, group.getId(), user2.getId());
+        Assertions.assertEquals(1, groupRepository.findById(group.getId()).get().getUsers().size());
+        Assertions.assertEquals(Set.of(u1), groupRepository.findById(group.getId()).get().getUsers());
+        userRepository.delete(u1);
+        userRepository.delete(u2);
+        groupRepository.delete(groupRepository.findById(group.getId()).get());
     }
 
     @Test
@@ -144,5 +165,6 @@ class GroupServiceTest {
         groupService.deleteGroup(1L, u1);
         Assertions.assertFalse(groupRepository.findById(1L).isPresent());
         Assertions.assertNull(userRepository.findById(1L).get().getGroups());
+        userRepository.delete(u1);
     }
 }
