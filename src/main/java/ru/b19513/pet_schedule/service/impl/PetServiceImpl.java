@@ -23,6 +23,7 @@ import ru.b19513.pet_schedule.service.mapper.PetMapper;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashSet;
 
 import static ru.b19513.pet_schedule.consts.Consts.PET_DELETED;
 
@@ -49,9 +50,9 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public PetDTO createPet(long groupId, String name, String description, Gender gender, PetType petType) {
-        var group = groupRepository.findById(groupId).orElseThrow(NotFoundException::new);
-        if (group.getPets().stream().map(p -> p.getName().equals(name)).findAny().isPresent()) {
-            throw new NameTakenException();
+        var group = groupRepository.findById(groupId).orElseThrow(new NotFoundException("Group with group id: " + groupId + " not found"));
+        if (group.getPets() != null && group.getPets().stream().map(p -> p.getName().equals(name)).findAny().isPresent()) {
+            throw new NameTakenException("Pet with name " + name + " already exist");
         }
         var pet = Pet.builder()
                 .name(name)
@@ -60,25 +61,29 @@ public class PetServiceImpl implements PetService {
                 .gender(enumMapper.DTOtoEntity(gender))
                 .description(description)
                 .build();
+        if (group.getPets() == null){
+            group.setPets(new HashSet<>());
+        }
+        group.getPets().add(pet);
         return petMapper.entityToDTO(petRepository.save(pet));
     }
 
     @Override
     public PetDTO updatePet(PetDTO petDTO) {
-        var pet = petRepository.findById(petDTO.getId()).orElseThrow(NotFoundException::new);
+        var pet = petRepository.findById(petDTO.getId()).orElseThrow(new NotFoundException("Pet with pet id " + petDTO.getId() + " not found"));
         petMapper.updateEntity(pet, petDTO);
         return petMapper.entityToDTO(petRepository.save(pet));
     }
 
     @Override
     public Collection<PetDTO> getPets(long groupId) {
-        var group = groupRepository.findById(groupId).orElseThrow(NotFoundException::new);
+        var group = groupRepository.findById(groupId).orElseThrow(new NotFoundException("Group wih group id " + groupId + " not found"));
         return petMapper.entityToDTO(group.getPets());
     }
 
     @Override
     public StatusDTO deletePet(long petId) {
-        var pet = petRepository.findById(petId).orElseThrow(NotFoundException::new);
+        var pet = petRepository.findById(petId).orElseThrow(new NotFoundException("Pet with pet id " + petId + " not found"));
         petRepository.delete(pet);
         return StatusDTO.builder()
                 .status(HttpStatus.OK)
@@ -88,8 +93,8 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public FeedNoteDTO createFeedNote(long petId, long userId, String comment) {
-        var pet = petRepository.findById(petId).orElseThrow(NotFoundException::new);
-        var user = userRepository.findById(userId).orElseThrow(NotFoundException::new);
+        var pet = petRepository.findById(petId).orElseThrow(new NotFoundException("Pet with pet id " + petId + " not found"));
+        var user = userRepository.findById(userId).orElseThrow(new NotFoundException("User with user id " + userId + " not found"));
         var newFeedNote = FeedNote.builder()
                 .pet(pet)
                 .user(user)
@@ -102,7 +107,7 @@ public class PetServiceImpl implements PetService {
     @Override
     public Collection<FeedNoteDTO> getFeedNotes(long petId) {
         if (!petRepository.existsById(petId))
-            throw new NotFoundException();
+            throw new NotFoundException("Pet with pet id " + petId + " not found");
         var collectionOfFeedNotes = feedNoteRepository.findByPetId(petId);
         return feedNoteMapper.entityToDTO(collectionOfFeedNotes);
     }
@@ -110,7 +115,7 @@ public class PetServiceImpl implements PetService {
     @Override
     public Collection<FeedNoteDTO> findFeedNotesByDate(long petId, LocalDateTime from, LocalDateTime to) {
         if (!petRepository.existsById(petId))
-            throw new NotFoundException();
+            throw new NotFoundException("Pet with pet id " + petId + " not found");
         var collectionOfFeedNotes = feedNoteRepository.findByPetIdAndDateTimeIsBetween(petId, from, to);
         return feedNoteMapper.entityToDTO(collectionOfFeedNotes);
     }

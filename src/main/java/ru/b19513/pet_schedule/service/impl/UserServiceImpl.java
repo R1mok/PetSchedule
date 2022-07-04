@@ -1,12 +1,11 @@
 package ru.b19513.pet_schedule.service.impl;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.b19513.pet_schedule.controller.entity.GroupDTO;
@@ -17,8 +16,8 @@ import ru.b19513.pet_schedule.exceptions.LoginBusyException;
 import ru.b19513.pet_schedule.exceptions.NotFoundException;
 import ru.b19513.pet_schedule.repository.InvitationRepository;
 import ru.b19513.pet_schedule.repository.UserRepository;
-import ru.b19513.pet_schedule.repository.entity.Invitation;
-import ru.b19513.pet_schedule.repository.entity.User;
+import ru.b19513.pet_schedule.repository.entity.*;
+import ru.b19513.pet_schedule.repository.*;
 import ru.b19513.pet_schedule.service.UserService;
 import ru.b19513.pet_schedule.service.mapper.EnumMapper;
 import ru.b19513.pet_schedule.service.mapper.GroupMapper;
@@ -28,6 +27,7 @@ import ru.b19513.pet_schedule.service.mapper.UserMapper;
 @Service
 public class UserServiceImpl implements UserService {
 
+    private final GroupRepository groupRepository;
     private final UserMapper userMapper;
     private final InvitationMapper invitationMapper;
     private final GroupMapper groupMapper;
@@ -37,9 +37,10 @@ public class UserServiceImpl implements UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserMapper userMapper, InvitationMapper invitationMapper, GroupMapper groupMapper,
-            EnumMapper enumMapper, UserRepository userRepository, InvitationRepository invitationRepository,
-            BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserServiceImpl(GroupRepository groupRepository, UserMapper userMapper, InvitationMapper invitationMapper, GroupMapper groupMapper,
+                           EnumMapper enumMapper, UserRepository userRepository, InvitationRepository invitationRepository,
+                           BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.groupRepository = groupRepository;
         this.userMapper = userMapper;
         this.invitationMapper = invitationMapper;
         this.groupMapper = groupMapper;
@@ -52,7 +53,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO signInNewUser(String login, String pass, String name) {
         if (userRepository.existsByLogin(login)) {
-            throw new LoginBusyException();
+            throw new LoginBusyException("Login \"" + login + "\" already exist");
         }
         var user = User.builder()
                 .login(login)
@@ -85,9 +86,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public GroupDTO acceptInvintation(User user, long groupId) {
         var invitation = invitationRepository.findById(new Invitation.Key(user.getId(), groupId))
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(new NotFoundException("Invitation with user id: " + user.getId() + " and group id: " + groupId + "not found"));
         var group = invitation.getGroup();
+        if (user.getGroups() == null){
+            user.setGroups(new HashSet<>());
+        }
         user.getGroups().add(group);
+        if (group.getUsers() == null){
+            group.setUsers(new HashSet<>());
+        }
+        group.getUsers().add(user);
+        groupRepository.save(group);
         userRepository.save(user);
         invitationRepository.delete(invitation);
         return groupMapper.entityToDTO(group);
