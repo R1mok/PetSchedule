@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import ru.b19513.pet_schedule.controller.entity.GroupDTO;
 import ru.b19513.pet_schedule.controller.entity.InvitationDTO;
@@ -63,6 +64,7 @@ public class UsersController {
     }
 
     @ApiOperation(value = "Получение данных пользователя")
+    @Transactional
     @GetMapping("/")
     public ResponseEntity<UserDTO> getUser(Authentication auth) {
         UserDTO userDTO = userService.getUser((User) auth.getPrincipal());

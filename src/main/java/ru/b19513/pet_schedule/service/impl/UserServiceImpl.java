@@ -24,6 +24,8 @@ import ru.b19513.pet_schedule.service.mapper.GroupMapper;
 import ru.b19513.pet_schedule.service.mapper.InvitationMapper;
 import ru.b19513.pet_schedule.service.mapper.UserMapper;
 
+import javax.transaction.Transactional;
+
 @Service
 public class UserServiceImpl implements UserService {
 
