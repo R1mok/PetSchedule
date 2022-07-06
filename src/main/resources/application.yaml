@@ -1,8 +1,8 @@
 spring:
   security:
     user:
-      name: name
-      password: password
+      name: admin
+      password: admin
   h2:
     console:
       enabled: true
