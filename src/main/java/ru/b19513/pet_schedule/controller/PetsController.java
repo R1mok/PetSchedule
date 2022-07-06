@@ -1,6 +1,7 @@
 package ru.b19513.pet_schedule.controller;
 
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -18,6 +19,7 @@ import java.util.Collection;
 
 @RestController
 @RequestMapping("/pets")
+@Tag(name = "Pets controller", description = "Контроллер питомцев")
 public class PetsController {
 
     private final PetService petService;
@@ -27,7 +29,7 @@ public class PetsController {
         this.petService = petService;
     }
 
-    @ApiOperation(value = "Добавить нового питомца")
+    @Operation(summary = "Добавить нового питомца")
     @PostMapping("/createPet")
     public ResponseEntity<PetDTO> createPet(@RequestParam long groupId, @RequestParam String name,
                                             @RequestParam String description,
@@ -36,28 +38,28 @@ public class PetsController {
         return ResponseEntity.ok(petDTO);
     }
 
-    @ApiOperation(value = "Обновить сведения о питомце")
+    @Operation(summary = "Обновить сведения о питомце")
     @PatchMapping("/")
     public ResponseEntity<PetDTO> updatePet(@RequestParam PetDTO petDTOInput) {
         PetDTO petDTO = petService.updatePet(petDTOInput);
         return ResponseEntity.ok(petDTO);
     }
 
-    @ApiOperation(value = "Получить список питомцев по id группы")
+    @Operation(summary = "Получить список питомцев по id группы")
     @GetMapping("/byGroup/{groupId}")
     public ResponseEntity<Collection<PetDTO>> getPets(@PathVariable long groupId) {
         Collection<PetDTO> PetDTOCollection = petService.getPets(groupId);
         return ResponseEntity.ok(PetDTOCollection);
     }
 
-    @ApiOperation(value = "Удалить питомца и все связанные с ним напоминания и записи")
+    @Operation(summary = "Удалить питомца и все связанные с ним напоминания и записи")
     @DeleteMapping("/{petId}")
     public ResponseEntity<StatusDTO> deletePet(@PathVariable long petId) {
         StatusDTO statusDTO = petService.deletePet(petId);
         return ResponseEntity.ok(statusDTO);
     }
 
-    @ApiOperation(value = "Создать запись о кормлении")
+    @Operation(summary = "Создать запись о кормлении")
     @PostMapping("/createFeedNote")
     public ResponseEntity<FeedNoteDTO> createFeedNote (Authentication auth, @RequestParam long petId,
                                                        @RequestParam String comment){
@@ -66,14 +68,14 @@ public class PetsController {
         return ResponseEntity.ok(feedNoteDTO);
     }
 
-    @ApiOperation(value = "Получить список записей о кормлении")
+    @Operation(summary = "Получить список записей о кормлении")
     @GetMapping("/{petId}/feedNotes")
     public ResponseEntity<Collection<FeedNoteDTO>> getFeedNotes(@PathVariable long petId) {
         Collection<FeedNoteDTO> feedNoteDTOCollection = petService.getFeedNotes(petId);
         return ResponseEntity.ok(feedNoteDTOCollection);
     }
 
-    @ApiOperation(value = "Найти записи о кормежках по времени и дате")
+    @Operation(summary = "Найти записи о кормежках по времени и дате")
     @GetMapping("/{petId}/feedNotesBetweenDates")
     public ResponseEntity<Collection<FeedNoteDTO>> findFeedNotesByDate(@PathVariable long petId,
                                                                        @RequestParam LocalDateTime from,

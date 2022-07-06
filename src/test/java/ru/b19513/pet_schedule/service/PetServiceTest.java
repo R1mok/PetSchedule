@@ -1,11 +1,12 @@
 package ru.b19513.pet_schedule.service;
 
+import nonapi.io.github.classgraph.utils.Assert;
+import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.util.Assert;
 import ru.b19513.pet_schedule.controller.entity.PetDTO;
 import ru.b19513.pet_schedule.controller.entity.enums.Gender;
 import ru.b19513.pet_schedule.controller.entity.enums.PetType;
@@ -17,6 +18,9 @@ import ru.b19513.pet_schedule.service.*;
 import ru.b19513.pet_schedule.service.mapper.PetMapper;;
 
 import javax.transaction.Transactional;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -82,7 +86,21 @@ class PetServiceTest {
     }
 
     @Test
+    @Transactional
     void getPets() {
+        Group group = Group.builder()
+                .name("group")
+                .build();
+        groupRepository.save(group);
+        var groupInRepo = groupRepository.findAll().stream().findAny().get();
+        petService.createPet(groupInRepo.getId(), "Murka", "", Gender.FEMALE, PetType.CAT);
+        petService.createPet(groupInRepo.getId(), "Barsik", "", Gender.MALE, PetType.CAT);
+        var pets = petRepository.findAll();
+        Assertions.assertEquals(petMapper.entityToDTO(pets),
+                petService.getPets(groupInRepo.getId()));
+        Assertions.assertEquals(2, pets.stream().map(e -> e.getGroup().equals(group)).count());
+        petRepository.deleteAll();
+        groupRepository.deleteAll();
     }
 
     @Test

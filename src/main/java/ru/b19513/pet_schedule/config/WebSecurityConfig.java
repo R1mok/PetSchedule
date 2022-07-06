@@ -28,6 +28,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/swagger-ui/**",
             // other public endpoints of your API may be appended to this array
             "/users/checkLogin/**",
+            "/users/register/**",
     };
 
     private final UserSecurityService userSecurityService;
@@ -55,6 +56,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        //auth.inMemoryAuthentication().withUser("admin").password("admin");
         auth.userDetailsService(userSecurityService).passwordEncoder(bCryptPasswordEncoder());
     }
 }

@@ -1,6 +1,8 @@
 package ru.b19513.pet_schedule.controller;
 
-import io.swagger.annotations.ApiOperation;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -17,6 +19,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/notifications")
+@Tag(name = "Notifications controller", description = "Контроллер уведомлений")
+
 public class NotificationController {
 
     private final NotificationService notificationService;
@@ -26,7 +30,7 @@ public class NotificationController {
         this.notificationService = notificationService;
     }
 
-    @ApiOperation(value = "Добавить новое напоминание типа Timeout.")
+    @Operation(summary = "Добавить новое напоминание типа Timeout.")
     @PostMapping("/timeout/")
     public ResponseEntity<NotificationTimeoutDTO> postNotificationTimeout(@RequestParam long groupId, @RequestParam String comment,
                                                           @RequestParam long petId, @RequestParam int elapsed) {
@@ -34,7 +38,7 @@ public class NotificationController {
         return ResponseEntity.ok(notificationDTO);
     }
 
-    @ApiOperation(value = "Добавить новое напоминание типа Schedule.")
+    @Operation(summary = "Добавить новое напоминание типа Schedule.")
     @PostMapping("/schedule/")
     public ResponseEntity<NotificationScheduleDTO> postNotificationSchedule(@RequestParam long groupId, @RequestParam String comment,
                                                                             @RequestParam long petId, @RequestParam List<LocalTime> times) {
@@ -42,7 +46,7 @@ public class NotificationController {
         return ResponseEntity.ok(notificationDTO);
     }
 
-    @ApiOperation(value = "Изменить напоминание.")
+    @Operation(summary = "Изменить напоминание.")
     @PutMapping("/")
     public ResponseEntity<NotificationDTO> updateNotification(@RequestParam NotificationDTO notif){
         NotificationDTO notificationDTO;
@@ -54,7 +58,7 @@ public class NotificationController {
         return ResponseEntity.ok(notificationDTO);
     }
 
-    @ApiOperation(value = "Показать напоминания.")
+    @Operation(summary = "Показать напоминания.")
     @GetMapping("/")
     public ResponseEntity<List<NotificationDTO>> showNotification(Authentication auth){
         var user = ((User)auth.getDetails());
@@ -62,14 +66,14 @@ public class NotificationController {
         return ResponseEntity.ok(notificationList);
     }
 
-    @ApiOperation(value = "Удалить напоминание по id.")
+    @Operation(summary = "Удалить напоминание по id.")
     @DeleteMapping("/{notifId}")
     public ResponseEntity<StatusDTO> deleteNotification(@PathVariable long notifId) {
         var status = notificationService.deleteNotification(notifId);
         return ResponseEntity.ok(status);
     }
 
-    @ApiOperation(value = "Проставить текущее время в напоминаниях, которые уже были показаны.")
+    @Operation(summary = "Проставить текущее время в напоминаниях, которые уже были показаны.")
     @PatchMapping("/setTime/{userId}")
     public ResponseEntity<StatusDTO> setTimeInNotificationNote(Authentication auth, @RequestParam List<Long> notificationsId){
         var user = ((User)auth.getDetails());

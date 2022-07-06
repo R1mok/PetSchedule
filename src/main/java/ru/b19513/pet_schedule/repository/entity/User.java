@@ -14,6 +14,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.transaction.Transactional;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -62,7 +64,7 @@ public class User implements UserDetails {
     private Gender gender;
 
     @Column
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private Set<Invitation> invitations;
 
     @Column
