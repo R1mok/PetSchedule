@@ -85,6 +85,9 @@ public class PetServiceImpl implements PetService {
     @Override
     public StatusDTO deletePet(long petId) {
         var pet = petRepository.findById(petId).orElseThrow(new NotFoundException("Pet with pet id " + petId + " not found"));
+        groupRepository.findAll().stream()
+                .filter(e -> e.getPets().contains(pet))
+                .forEach(e -> e.getPets().remove(pet));
         petRepository.delete(pet);
         return StatusDTO.builder()
                 .status(HttpStatus.OK)

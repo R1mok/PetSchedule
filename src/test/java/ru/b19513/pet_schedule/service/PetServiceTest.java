@@ -12,14 +12,17 @@ import ru.b19513.pet_schedule.controller.entity.enums.Gender;
 import ru.b19513.pet_schedule.controller.entity.enums.PetType;
 import ru.b19513.pet_schedule.repository.GroupRepository;
 import ru.b19513.pet_schedule.repository.PetRepository;
+import ru.b19513.pet_schedule.repository.UserRepository;
 import ru.b19513.pet_schedule.repository.entity.Group;
 import ru.b19513.pet_schedule.repository.entity.Pet;
+import ru.b19513.pet_schedule.repository.entity.User;
 import ru.b19513.pet_schedule.service.*;
 import ru.b19513.pet_schedule.service.mapper.PetMapper;;
 
 import javax.transaction.Transactional;
 
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.mockito.Mockito.mock;
@@ -104,11 +107,34 @@ class PetServiceTest {
     }
 
     @Test
+    @Transactional
     void deletePet() {
+        Group group = Group.builder()
+                .name("group")
+                .build();
+        groupRepository.save(group);
+        var groupInRepo = groupRepository.findAll().get(0);
+        petService.createPet(groupInRepo.getId(), "Barsik", "", Gender.MALE, PetType.CAT);
+        var pet = petRepository.findAll().stream().findAny().get();
+        Assertions.assertEquals(1, petService.getPets(groupInRepo.getId()).size());
+        petService.deletePet(pet.getId());
+        Assertions.assertEquals(0, petService.getPets(groupInRepo.getId()).size());
+        petRepository.deleteAll();
+        groupRepository.deleteAll();
     }
 
     @Test
+    @Transactional
     void createFeedNote() {
+        Group group = Group.builder()
+                .name("group")
+                .build();
+        groupRepository.save(group);
+        var userRepository = mock(UserRepository.class).findById(1L);
+        when(userRepository).thenReturn(Optional.of(User.builder().name("Anton").login("R1mok").build()));
+        var groupInRepo = groupRepository.findAll().stream().findAny().get();
+        petService.createPet(groupInRepo.getId(), "Barsik", "", Gender.MALE, PetType.CAT);
+        petService.createFeedNote(groupInRepo.getId(), 1L, "Feed this pet");
     }
 
     @Test
