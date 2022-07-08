@@ -85,6 +85,9 @@ public class PetServiceImpl implements PetService {
     @Override
     public StatusDTO deletePet(long petId) {
         var pet = petRepository.findById(petId).orElseThrow(new NotFoundException("Pet with pet id " + petId + " not found"));
+        groupRepository.findAll().stream()
+                .filter(e -> e.getPets().contains(pet))
+                .forEach(e -> e.getPets().remove(pet));
         petRepository.delete(pet);
         return StatusDTO.builder()
                 .status(HttpStatus.OK)
@@ -100,7 +103,9 @@ public class PetServiceImpl implements PetService {
                 .pet(pet)
                 .user(user)
                 .dateTime(LocalDateTime.now())
+                .comment(comment)
                 .build();
+        feedNoteRepository.save(newFeedNote);
         return feedNoteMapper.entityToDTO(newFeedNote);
 
     }
@@ -117,7 +122,7 @@ public class PetServiceImpl implements PetService {
     public Collection<FeedNoteDTO> findFeedNotesByDate(long petId, LocalDateTime from, LocalDateTime to) {
         if (!petRepository.existsById(petId))
             throw new NotFoundException("Pet with pet id " + petId + " not found");
-        var collectionOfFeedNotes = feedNoteRepository.findByPetIdAndDateTimeIsBetween(petId, from, to);
+        var collectionOfFeedNotes = feedNoteRepository.findByPetIdAndDateTimeIsAfterAndDateTimeBefore(petId, from, to);
         return feedNoteMapper.entityToDTO(collectionOfFeedNotes);
     }
 }
