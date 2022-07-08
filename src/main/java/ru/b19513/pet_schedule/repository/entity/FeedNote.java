@@ -26,4 +26,7 @@ public class FeedNote {
 
     @Column
     private LocalDateTime dateTime;
+
+    @Column
+    private String comment;
 }
