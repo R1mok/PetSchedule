@@ -42,7 +42,7 @@ class UserServiceImplTest {
         Assertions.assertEquals("R1mok", userInRepo.getLogin());
         Assertions.assertEquals("Anton", userInRepo.getName());
         Assertions.assertTrue(bCryptPasswordEncoder.matches("pass",
-                        userInRepo.getPassword()));
+                userInRepo.getPassword()));
         userRepository.deleteAll();
     }
 
@@ -70,7 +70,7 @@ class UserServiceImplTest {
         var oneInvitationOfUser = userService.getInvitation(userInRepo2);
         Assertions.assertEquals(1, oneInvitationOfUser.size());
         Assertions.assertEquals(InvitationDTO.builder()
-                .user(userMapper.entityToDTO(userInRepo2))
+                .userId(userInRepo2.getId())
                 .group(groupMapper.entityToDTO(group)).build(), oneInvitationOfUser.stream().findAny().get());
 
         userRepository.deleteAll();
