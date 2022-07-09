@@ -18,8 +18,7 @@ import ru.b19513.pet_schedule.service.mapper.GroupMapper;
 
 import java.util.HashSet;
 
-import static ru.b19513.pet_schedule.consts.Consts.GROUP_DELETED;
-import static ru.b19513.pet_schedule.consts.Consts.INVITATION_SENDED;
+import static ru.b19513.pet_schedule.consts.Consts.*;
 
 @Service
 public class GroupServiceImpl implements GroupService {
@@ -71,9 +70,11 @@ public class GroupServiceImpl implements GroupService {
         var user = userRepository.findById(userId)
                 .orElseThrow(new NotFoundException("User with user id " + userId + " not found"));
         // Если приглашение уже есть в БД - ничего не поменяется
-        var inv = new Invitation(user, group);
-        invitationRepository.save(inv);
-
+        var invInRepo = invitationRepository.save(new Invitation(user, group));
+        if (user.getInvitations() == null) {
+            user.setInvitations(new HashSet<>());
+        }
+        user.getInvitations().add(invInRepo);
         return StatusDTO.builder()
                 .status(HttpStatus.OK)
                 .description(INVITATION_SENDED)
