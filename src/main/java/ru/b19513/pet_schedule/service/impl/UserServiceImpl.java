@@ -82,11 +82,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Collection<InvitationDTO> getInvitation(User user) {
-        return invitationMapper.entityToDTO(user.getInvitations());
+        var invList = invitationRepository.findAllByUserId(user.getId());
+        return invitationMapper.entityToDTO(invList);
     }
 
     @Override
-    public GroupDTO acceptInvintation(User user, long groupId) {
+    public GroupDTO acceptInvitation(User user, long groupId) {
         var invitation = invitationRepository.findById(new Invitation.Key(user.getId(), groupId))
                 .orElseThrow(new NotFoundException("Invitation with user id: " + user.getId() + " and group id: " + groupId + "not found"));
         var group = invitation.getGroup();
@@ -108,7 +109,7 @@ public class UserServiceImpl implements UserService {
     public StatusDTO isLoginFree(String login) {
         return StatusDTO.builder()
                 .status(HttpStatus.OK)
-                .description(userRepository.existsByLogin(login) ? "true" : "false")
+                .description(userRepository.existsByLogin(login) ? "false" : "true")
                 .build();
     }
 

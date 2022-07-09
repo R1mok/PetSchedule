@@ -74,7 +74,7 @@ public class GroupServiceImpl implements GroupService {
         if (user.getInvitations() == null) {
             user.setInvitations(new HashSet<>());
         }
-        user.getInvitations().add(invInRepo);
+        //user.getInvitations().add(invInRepo); sof
         return StatusDTO.builder()
                 .status(HttpStatus.OK)
                 .description(INVITATION_SENDED)

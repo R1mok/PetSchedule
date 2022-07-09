@@ -15,19 +15,14 @@ import javax.transaction.Transactional;
 @SpringBootTest
 @Transactional
 class GroupServiceTest {
-
     @Autowired
     GroupService groupService;
-
     @Autowired
     GroupRepository groupRepository;
-
     @Autowired
     UserService userService;
-
     @Autowired
     UserRepository userRepository;
-
     @Test
     @Transactional
     void createGroup() {
@@ -104,7 +99,7 @@ class GroupServiceTest {
         groupService.createGroup(u1, "g1");
         var group = groupRepository.findAll().stream().findAny().get();
         groupService.inviteUser(u1, group.getId(), user2.getId());
-        userService.acceptInvintation(u2, group.getId());
+        userService.acceptInvitation(u2, group.getId());
         Assertions.assertEquals(1, userRepository.findById(user2.getId()).get().getGroups().size());
         Assertions.assertEquals(2, groupRepository.findById(group.getId()).get().getUsers().size());
         Assertions.assertEquals(Set.of(u1, u2), groupRepository.findById(group.getId()).get().getUsers());
@@ -136,7 +131,7 @@ class GroupServiceTest {
         groupService.createGroup(u1, "g1");
         var group = groupRepository.findAll().stream().findAny().get();
         groupService.inviteUser(u1, group.getId(), user2.getId());
-        userService.acceptInvintation(u2, group.getId());
+        userService.acceptInvitation(u2, group.getId());
         Assertions.assertEquals(2, groupRepository.findById(group.getId()).get().getUsers().size());
         Assertions.assertEquals(Set.of(u1, u2), groupRepository.findById(group.getId()).get().getUsers());
         groupService.kickUser(u1, group.getId(), user2.getId());

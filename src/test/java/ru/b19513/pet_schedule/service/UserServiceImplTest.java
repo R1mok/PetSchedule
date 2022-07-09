@@ -15,10 +15,10 @@ import ru.b19513.pet_schedule.service.mapper.GroupMapper;
 import ru.b19513.pet_schedule.service.mapper.UserMapper;
 
 import javax.transaction.Transactional;
+import java.util.Set;
 
 @SpringBootTest
 class UserServiceImplTest {
-
     @Autowired
     UserService userService;
     @Autowired
@@ -34,7 +34,6 @@ class UserServiceImplTest {
     @Autowired
     GroupMapper groupMapper;
     BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-
     @Test
     void signInNewUser() {
         userService.signInNewUser("R1mok", "pass", "Anton");
@@ -78,18 +77,52 @@ class UserServiceImplTest {
     }
 
     @Test
-    void acceptInvintation() {
+    @Transactional
+    void acceptInvitation() {
+        userService.signInNewUser("R1mok", "pass", "Anton");
+        var user = userRepository.findAll().get(0);
+        userService.signInNewUser("HamzReg", "pass", "Regina");
+        var groupOwner = userRepository.findAll().get(1);
+        groupService.createGroup(groupOwner, "group");
+        var group = groupRepository.findAll().get(0);
+        groupService.inviteUser(groupOwner, group.getId(), user.getId());
+        userService.acceptInvitation(user, group.getId());
+        Assertions.assertEquals(Set.of(groupOwner, user), groupRepository.findAll().get(0).getUsers());
+        userRepository.deleteAll();
+        groupRepository.deleteAll();
     }
 
     @Test
     void isLoginFree() {
+        Assertions.assertEquals("true", userService.isLoginFree("R1mok").getDescription());
+        userService.signInNewUser("R1mok", "pass", "Anton");
+        Assertions.assertEquals("false", userService.isLoginFree("R1mok").getDescription());
+        userRepository.deleteAll();
     }
 
     @Test
     void findUsersByLogin() {
+        Assertions.assertTrue(userService.findUsersByLogin("R1mok").stream().findAny().isEmpty());
+        userService.signInNewUser("R1mok", "pass", "Anton");
+        var login1 = userService.findUsersByLogin("R1mok").get(0).getLogin();
+        Assertions.assertEquals("R1mok", login1);
+        userRepository.deleteAll();
     }
 
     @Test
     void getUser() {
+        var userDTO = userService.signInNewUser("R1mok", "pass", "Anton");
+        var user = User.builder()
+                .name("Anton")
+                .id(userDTO.getId())
+                .login("R1mok")
+                .build();
+        var userFromMethod = userService.getUser(user);
+        var expected = userMapper.entityToDTO(userRepository.findAll().get(0));
+        Assertions.assertEquals(expected.getLogin(),
+                userFromMethod.getLogin());
+        Assertions.assertEquals(expected.getName(), userFromMethod.getName());
+        Assertions.assertEquals(expected.getId(), userFromMethod.getId());
+        userRepository.deleteAll();
     }
 }
