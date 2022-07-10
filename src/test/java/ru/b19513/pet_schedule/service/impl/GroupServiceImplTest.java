@@ -1,4 +1,4 @@
-package ru.b19513.pet_schedule.service;
+package ru.b19513.pet_schedule.service.impl;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,12 +9,15 @@ import ru.b19513.pet_schedule.repository.entity.enums.Gender;
 import ru.b19513.pet_schedule.controller.entity.*;
 import lombok.val;
 import org.junit.jupiter.api.Assertions;
+import ru.b19513.pet_schedule.service.GroupService;
+import ru.b19513.pet_schedule.service.UserService;
+
 import java.util.Set;
 import javax.transaction.Transactional;
 
 @SpringBootTest
 @Transactional
-class GroupServiceTest {
+class GroupServiceImplTest {
     @Autowired
     GroupService groupService;
     @Autowired

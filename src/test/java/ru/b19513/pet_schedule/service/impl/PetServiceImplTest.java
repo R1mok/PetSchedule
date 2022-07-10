@@ -1,6 +1,5 @@
-package ru.b19513.pet_schedule.service;
+package ru.b19513.pet_schedule.service.impl;
 
-import org.assertj.core.data.TemporalUnitOffset;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,18 +14,16 @@ import ru.b19513.pet_schedule.repository.UserRepository;
 import ru.b19513.pet_schedule.repository.entity.Group;
 import ru.b19513.pet_schedule.repository.entity.Pet;
 import ru.b19513.pet_schedule.repository.entity.User;
+import ru.b19513.pet_schedule.service.PetService;
 import ru.b19513.pet_schedule.service.mapper.FeedNoteMapper;
 import ru.b19513.pet_schedule.service.mapper.PetMapper;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.time.temporal.TemporalUnit;
 import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 
 @SpringBootTest
-class PetServiceTest {
+class PetServiceImplTest {
     @Autowired
     PetRepository petRepository;
     @Autowired
