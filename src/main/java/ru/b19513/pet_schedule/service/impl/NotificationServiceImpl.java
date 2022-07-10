@@ -17,7 +17,9 @@ import ru.b19513.pet_schedule.service.mapper.NotificationMapper;
 import java.time.*;
 import java.time.chrono.ChronoLocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static ru.b19513.pet_schedule.consts.Consts.NOTIFICATION_DELETED;
 import static ru.b19513.pet_schedule.consts.Consts.NOTIFICATION_NOTE_UPDATED;
@@ -56,9 +58,13 @@ public class NotificationServiceImpl implements NotificationService {
                 .enabled(true)
                 .build();
         var notifSet = pet.getNotifications(); // добавляю к питомцу созданное уведомление
+        if (notifSet == null) {
+            notifSet = new HashSet<>();
+        }
         notifSet.add(notificationTimeout);
         pet.setNotifications(notifSet);
-        return notificationMapper.entityToDTO(notificationRepository.save(notificationTimeout));
+        var notifInRepo = notificationRepository.save(notificationTimeout);
+        return notificationMapper.entityToDTO(notifInRepo);
     }
 
     @Override
@@ -79,9 +85,13 @@ public class NotificationServiceImpl implements NotificationService {
                 .pet(pet)
                 .build();
         var notifSet = pet.getNotifications(); // добавляю к питомцу созданное уведомление
+        if (notifSet == null) {
+            notifSet = new HashSet<>();
+        }
         notifSet.add(notificationSchedule);
         pet.setNotifications(notifSet);
-        return notificationMapper.entityToDTO(notificationRepository.save(notificationSchedule));
+        var notifInRepo = notificationRepository.save(notificationSchedule);
+        return notificationMapper.entityToDTO(notifInRepo);
     }
 
     @Override
@@ -108,7 +118,12 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public List<NotificationDTO> showNotification(User user) {
-        var groupSet = user.getGroups();
+        Set<Group> groupSet;
+        if (user.getGroups() == null) {
+            groupSet = new HashSet<>();
+        } else groupSet = user.getGroups();
+        if (user.getOwnedGroups() != null)
+            groupSet.addAll(user.getOwnedGroups());
         List<Notification> notificationList = new ArrayList<>();
         groupSet.forEach(g -> notificationList.addAll(g.getNotificationList()));
         List<NotificationDTO> resultNotificationList = new ArrayList<>();
