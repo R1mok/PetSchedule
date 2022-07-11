@@ -1,6 +1,7 @@
 package ru.b19513.pet_schedule.service.impl;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -61,10 +62,10 @@ class NotificationServiceImplTest {
         Assertions.assertEquals(notifInRepo.getGroupId(), notifTimeoutDTO.getGroupId());
         Assertions.assertEquals(notifInRepo.getComment(), notifTimeoutDTO.getComment());
         Assertions.assertEquals(notifInRepo.getPeriods(), notifTimeoutDTO.getPeriods());
-        userRepository.deleteAll();
-        groupRepository.deleteAll();
-        notificationRepository.deleteAll();
         petRepository.deleteAll();
+        notificationRepository.deleteAll();
+        groupRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -80,10 +81,10 @@ class NotificationServiceImplTest {
         Assertions.assertEquals(notifInRepo.getGroupId(), notifScheduleDTO.getGroupId());
         Assertions.assertEquals(notifInRepo.getComment(), notifScheduleDTO.getComment());
         Assertions.assertEquals(notifInRepo.getTimes(), notifScheduleDTO.getTimes());
-        groupService.deleteGroup(groupDTO.getId(), userRepository.findByLogin(userOwnerDTO.getLogin()).get());
-        userRepository.deleteAll();
-        notificationRepository.deleteAll();
         petRepository.deleteAll();
+        notificationRepository.deleteAll();
+        groupRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -96,19 +97,43 @@ class NotificationServiceImplTest {
 
     @Test
     @Transactional
-    void showNotification() {
+    void showNotification() throws InterruptedException {
         var userDTO = userService.signInNewUser("R1mok", "pass", "Anton");
         var groupDTO = groupService.createGroup(userRepository.getById(userDTO.getId()), "group");
         var group = groupRepository.findAll().get(0);
         var petDTO = petService.createPet(groupDTO.getId(), "Barsik", "My lover", Gender.MALE, PetType.CAT);
+        var fnDTO = petService.createFeedNote(petDTO.getId(), userDTO.getId(), "Feed Barsik");
         notificationService.createNotificationTimeout(groupDTO.getId(), petDTO.getId(), "Feed Barsik", 1);
-        var notifListDTO = notificationService.showNotification(userRepository.findByLogin(userDTO.getLogin()).get());
-        var notifExpectedList = notificationRepository.findAll().stream().filter(e -> e.getGroup().equals(group)).collect(Collectors.toSet());
-        Assertions.assertEquals(notifExpectedList, notifListDTO);
+        Thread.sleep(1000);
+        var notifActualDTO = notificationService.showNotification(userRepository.findByLogin(userDTO.getLogin()).get()).get(0);
+        var notifExpectedDTO = notificationMapper.entityToDTO(notificationRepository
+                .findAll().stream().filter(e -> e.getGroup().equals(group)).collect(Collectors.toSet())).get(0);
+        Assertions.assertEquals(notifExpectedDTO.getComment(), notifActualDTO.getComment());
+        Assertions.assertEquals(notifExpectedDTO.getId(), notifActualDTO.getId());
+        Assertions.assertEquals(notifExpectedDTO.getGroupId(), notifActualDTO.getGroupId());
+        notificationRepository.deleteAll();
+        petRepository.deleteAll();
+        groupRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
+    @Transactional
     void deleteNotification() {
+        var userDTO = userService.signInNewUser("R1mok", "pass", "Anton");
+        var groupDTO = groupService.createGroup(userRepository.getById(userDTO.getId()), "group");
+        var group = groupRepository.findAll().get(0);
+        var petDTO = petService.createPet(groupDTO.getId(), "Barsik", "My lover", Gender.MALE, PetType.CAT);
+        var fnDTO = petService.createFeedNote(petDTO.getId(), userDTO.getId(), "Feed Barsik");
+        var notifDTO = notificationService.createNotificationTimeout(groupDTO.getId(), petDTO.getId(), "Feed Barsik", 1);
+        notificationService.deleteNotification(notifDTO.getId());
+        var user = userRepository.findByLogin(userDTO.getLogin()).get();
+        var countOfNotification = notificationService.showNotification(user).size();
+        Assertions.assertEquals(0, countOfNotification);
+        notificationRepository.deleteAll();
+        petRepository.deleteAll();
+        groupRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test

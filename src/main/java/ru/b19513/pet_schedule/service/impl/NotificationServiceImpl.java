@@ -63,6 +63,10 @@ public class NotificationServiceImpl implements NotificationService {
         }
         notifSet.add(notificationTimeout);
         pet.setNotifications(notifSet);
+        if (group.getNotificationList() == null) {
+            group.setNotificationList(new ArrayList<>());
+        }
+        group.getNotificationList().addAll(notifSet);
         var notifInRepo = notificationRepository.save(notificationTimeout);
         return notificationMapper.entityToDTO(notifInRepo);
     }
@@ -132,16 +136,19 @@ public class NotificationServiceImpl implements NotificationService {
                 var notif = (NotificationTimeout) notification;
                 var pet = notif.getPet();
                 var fn = feedNoteRepository.findFirstByPetIdOrderByDateTimeDesc(pet.getId());
-                var alarmTime = fn.getDateTime().plusSeconds((notif.getElapsed()));
-                boolean notTimeToSend = false;
-                for (var period : notif.getTimes()) {
-                    if (alarmTime.isAfter(ChronoLocalDateTime.from(period.getTimeFrom())) &&
-                            alarmTime.isBefore(ChronoLocalDateTime.from(period.getTimeTo()))) {
-                        notTimeToSend = true;
+                if (fn != null) {
+                    LocalDateTime alarmTime = fn.getDateTime().plusSeconds((notif.getElapsed()));
+                    boolean notTimeToSend = false;
+                    if (notif.getTimes() != null)
+                        for (var period : notif.getTimes()) {
+                            if (alarmTime.isAfter(ChronoLocalDateTime.from(period.getTimeFrom())) &&
+                                    alarmTime.isBefore(ChronoLocalDateTime.from(period.getTimeTo()))) {
+                                notTimeToSend = true;
+                            }
+                        }
+                    if (!notTimeToSend && alarmTime.isBefore(ChronoLocalDateTime.from(LocalDateTime.now()))) {
+                        resultNotificationList.add(notificationMapper.entityToDTO(notif));
                     }
-                }
-                if (alarmTime.isBefore(ChronoLocalDateTime.from(LocalTime.now())) && !notTimeToSend) {
-                    resultNotificationList.add(notificationMapper.entityToDTO(notif));
                 }
             } else if (notification instanceof NotificationSchedule) {
                 var notif = (NotificationSchedule) notification;
@@ -165,6 +172,10 @@ public class NotificationServiceImpl implements NotificationService {
     public StatusDTO deleteNotification(long notifId) {
         var notification = notificationRepository.findById(notifId)
                 .orElseThrow(new NotFoundException("Notification with notification id " + notifId + " not found"));
+        var group = notification.getGroup();
+        group.getNotificationList().remove(notification);
+        var pet = petRepository.findById(notification.getId()).get();
+        pet.getNotifications().remove(notification);
         notificationRepository.delete(notification);
         return StatusDTO.builder()
                 .status(HttpStatus.OK)
