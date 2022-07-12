@@ -188,6 +188,7 @@ public class NotificationServiceImpl implements NotificationService {
         for (var notifId : notificationsId) {
             var notifNote = notificationNoteRepository.findByNotificationIdAndUser(notifId, user)
                     .orElse(NotificationNote.builder()
+                            .key(new NotificationNote.Key(user.getId(), notifId))
                             .user(user)
                             .notification(notificationRepository.findById(notifId)
                                     .orElseThrow(new NotFoundException("Notification with notification id " + notifId + " not found")))

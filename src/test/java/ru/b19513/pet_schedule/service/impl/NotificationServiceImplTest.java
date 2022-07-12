@@ -5,12 +5,13 @@ import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.b19513.pet_schedule.controller.entity.NotificationDTO;
+import ru.b19513.pet_schedule.controller.entity.NotificationScheduleDTO;
+import ru.b19513.pet_schedule.controller.entity.NotificationTimeoutDTO;
 import ru.b19513.pet_schedule.controller.entity.enums.Gender;
 import ru.b19513.pet_schedule.controller.entity.enums.PetType;
-import ru.b19513.pet_schedule.repository.GroupRepository;
-import ru.b19513.pet_schedule.repository.NotificationRepository;
-import ru.b19513.pet_schedule.repository.PetRepository;
-import ru.b19513.pet_schedule.repository.UserRepository;
+import ru.b19513.pet_schedule.repository.*;
+import ru.b19513.pet_schedule.repository.entity.NotificationNote;
 import ru.b19513.pet_schedule.repository.entity.NotificationSchedule;
 import ru.b19513.pet_schedule.repository.entity.NotificationTimeout;
 import ru.b19513.pet_schedule.repository.entity.User;
@@ -36,6 +37,8 @@ class NotificationServiceImplTest {
     UserRepository userRepository;
     @Autowired
     GroupRepository groupRepository;
+    @Autowired
+    NotificationNoteRepository notificationNoteRepository;
     @Autowired
     PetRepository petRepository;
     @Autowired
@@ -88,11 +91,49 @@ class NotificationServiceImplTest {
     }
 
     @Test
+    @Transactional
     void updateNotificationSchedule() {
+        var userOwnerDTO = userService.signInNewUser("R1mok", "pass", "Anton");
+        var groupDTO = groupService.createGroup(userRepository.getById(userOwnerDTO.getId()), "group");
+        var petDTO = petService.createPet(groupDTO.getId(), "Barsik", "My lover", Gender.MALE, PetType.CAT);
+        var notifScheduleDTO = notificationService.createNotificationSchedule(groupDTO.getId(),
+                petDTO.getId(), "Barsik should to feeed", List.of(LocalTime.of(12, 30)));
+        var notificationDTO = NotificationScheduleDTO.builder()
+                .id(notifScheduleDTO.getId())
+                .comment("Barsik should to feed")
+                .build();
+        var notifFromRepo = notificationRepository.findById(notificationDTO.getId()).get();
+        notifFromRepo.setComment("Barsik should to feed");
+        notificationService.updateNotificationSchedule(notificationDTO);
+        var updatedNotif = notificationRepository.findById(notificationDTO.getId()).get();
+        Assertions.assertEquals(notifFromRepo, updatedNotif);
+        notificationRepository.deleteAll();
+        petRepository.deleteAll();
+        groupRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
+    @Transactional
     void updateNotificationTimeout() {
+        var userOwnerDTO = userService.signInNewUser("R1mok", "pass", "Anton");
+        var groupDTO = groupService.createGroup(userRepository.getById(userOwnerDTO.getId()), "group");
+        var petDTO = petService.createPet(groupDTO.getId(), "Barsik", "My lover", Gender.MALE, PetType.CAT);
+        var notifTimeoutDTO = notificationService.createNotificationTimeout(groupDTO.getId(),
+                petDTO.getId(), "Barsik should to feeed", 1);
+        var notificationDTO = NotificationTimeoutDTO.builder()
+                .id(notifTimeoutDTO.getId())
+                .comment("Barsik should to feed")
+                .build();
+        var notifFromRepo = notificationRepository.findById(notificationDTO.getId()).get();
+        notifFromRepo.setComment("Barsik should to feed");
+        notificationService.updateNotificationTimeout(notificationDTO);
+        var updatedNotif = notificationRepository.findById(notificationDTO.getId()).get();
+        Assertions.assertEquals(notifFromRepo, updatedNotif);
+        notificationRepository.deleteAll();
+        petRepository.deleteAll();
+        groupRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -137,6 +178,16 @@ class NotificationServiceImplTest {
     }
 
     @Test
+    @Transactional
     void setTimeInNotificationNote() {
+        var userDTO = userService.signInNewUser("R1mok", "pass", "Anton");
+        var groupDTO = groupService.createGroup(userRepository.getById(userDTO.getId()), "group");
+        var group = groupRepository.findAll().get(0);
+        var petDTO = petService.createPet(groupDTO.getId(), "Barsik", "My lover", Gender.MALE, PetType.CAT);
+        var notifDTO = notificationService.createNotificationTimeout(groupDTO.getId(), petDTO.getId(), "Feed Barsik", 1);
+        notificationService.setTimeInNotificationNote(userRepository.getById(userDTO.getId()), List.of(notifDTO.getId()));
+        var notifNote = notificationNoteRepository.findAll().get(0);
+        Assertions.assertEquals(notificationRepository.findAll().get(0), notifNote.getNotification());
+        Assertions.assertEquals(userRepository.getById(userDTO.getId()), notifNote.getUser());
     }
 }
