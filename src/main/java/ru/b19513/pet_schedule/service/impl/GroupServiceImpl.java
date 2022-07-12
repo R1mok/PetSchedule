@@ -17,6 +17,8 @@ import ru.b19513.pet_schedule.service.GroupService;
 import ru.b19513.pet_schedule.service.mapper.GroupMapper;
 
 import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static ru.b19513.pet_schedule.consts.Consts.*;
 
@@ -45,6 +47,7 @@ public class GroupServiceImpl implements GroupService {
                 .build();
         group.setUsers(new HashSet<>());
         group.getUsers().add(owner);
+        owner.setOwnedGroups(Set.of(group));
         return groupMapper.entityToDTO(groupRepository.save(group));
     }
 

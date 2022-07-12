@@ -17,7 +17,9 @@ import ru.b19513.pet_schedule.service.mapper.NotificationMapper;
 import java.time.*;
 import java.time.chrono.ChronoLocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static ru.b19513.pet_schedule.consts.Consts.NOTIFICATION_DELETED;
 import static ru.b19513.pet_schedule.consts.Consts.NOTIFICATION_NOTE_UPDATED;
@@ -56,9 +58,17 @@ public class NotificationServiceImpl implements NotificationService {
                 .enabled(true)
                 .build();
         var notifSet = pet.getNotifications(); // добавляю к питомцу созданное уведомление
+        if (notifSet == null) {
+            notifSet = new HashSet<>();
+        }
         notifSet.add(notificationTimeout);
         pet.setNotifications(notifSet);
-        return notificationMapper.entityToDTO(notificationRepository.save(notificationTimeout));
+        if (group.getNotificationList() == null) {
+            group.setNotificationList(new ArrayList<>());
+        }
+        group.getNotificationList().addAll(notifSet);
+        var notifInRepo = notificationRepository.save(notificationTimeout);
+        return notificationMapper.entityToDTO(notifInRepo);
     }
 
     @Override
@@ -79,9 +89,13 @@ public class NotificationServiceImpl implements NotificationService {
                 .pet(pet)
                 .build();
         var notifSet = pet.getNotifications(); // добавляю к питомцу созданное уведомление
+        if (notifSet == null) {
+            notifSet = new HashSet<>();
+        }
         notifSet.add(notificationSchedule);
         pet.setNotifications(notifSet);
-        return notificationMapper.entityToDTO(notificationRepository.save(notificationSchedule));
+        var notifInRepo = notificationRepository.save(notificationSchedule);
+        return notificationMapper.entityToDTO(notifInRepo);
     }
 
     @Override
@@ -108,7 +122,12 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public List<NotificationDTO> showNotification(User user) {
-        var groupSet = user.getGroups();
+        Set<Group> groupSet;
+        if (user.getGroups() == null) {
+            groupSet = new HashSet<>();
+        } else groupSet = user.getGroups();
+        if (user.getOwnedGroups() != null)
+            groupSet.addAll(user.getOwnedGroups());
         List<Notification> notificationList = new ArrayList<>();
         groupSet.forEach(g -> notificationList.addAll(g.getNotificationList()));
         List<NotificationDTO> resultNotificationList = new ArrayList<>();
@@ -117,16 +136,19 @@ public class NotificationServiceImpl implements NotificationService {
                 var notif = (NotificationTimeout) notification;
                 var pet = notif.getPet();
                 var fn = feedNoteRepository.findFirstByPetIdOrderByDateTimeDesc(pet.getId());
-                var alarmTime = fn.getDateTime().plusSeconds((notif.getElapsed()));
-                boolean notTimeToSend = false;
-                for (var period : notif.getTimes()) {
-                    if (alarmTime.isAfter(ChronoLocalDateTime.from(period.getTimeFrom())) &&
-                            alarmTime.isBefore(ChronoLocalDateTime.from(period.getTimeTo()))) {
-                        notTimeToSend = true;
+                if (fn != null) {
+                    LocalDateTime alarmTime = fn.getDateTime().plusSeconds((notif.getElapsed()));
+                    boolean notTimeToSend = false;
+                    if (notif.getTimes() != null)
+                        for (var period : notif.getTimes()) {
+                            if (alarmTime.isAfter(ChronoLocalDateTime.from(period.getTimeFrom())) &&
+                                    alarmTime.isBefore(ChronoLocalDateTime.from(period.getTimeTo()))) {
+                                notTimeToSend = true;
+                            }
+                        }
+                    if (!notTimeToSend && alarmTime.isBefore(ChronoLocalDateTime.from(LocalDateTime.now()))) {
+                        resultNotificationList.add(notificationMapper.entityToDTO(notif));
                     }
-                }
-                if (alarmTime.isBefore(ChronoLocalDateTime.from(LocalTime.now())) && !notTimeToSend) {
-                    resultNotificationList.add(notificationMapper.entityToDTO(notif));
                 }
             } else if (notification instanceof NotificationSchedule) {
                 var notif = (NotificationSchedule) notification;
@@ -150,7 +172,11 @@ public class NotificationServiceImpl implements NotificationService {
     public StatusDTO deleteNotification(long notifId) {
         var notification = notificationRepository.findById(notifId)
                 .orElseThrow(new NotFoundException("Notification with notification id " + notifId + " not found"));
+        var group = notification.getGroup();
+        group.getNotificationList().remove(notification);
+        var pet = notification.getPet();
         notificationRepository.delete(notification);
+        pet.getNotifications().remove(notification);
         return StatusDTO.builder()
                 .status(HttpStatus.OK)
                 .description(NOTIFICATION_DELETED)
@@ -162,6 +188,7 @@ public class NotificationServiceImpl implements NotificationService {
         for (var notifId : notificationsId) {
             var notifNote = notificationNoteRepository.findByNotificationIdAndUser(notifId, user)
                     .orElse(NotificationNote.builder()
+                            .key(new NotificationNote.Key(user.getId(), notifId))
                             .user(user)
                             .notification(notificationRepository.findById(notifId)
                                     .orElseThrow(new NotFoundException("Notification with notification id " + notifId + " not found")))

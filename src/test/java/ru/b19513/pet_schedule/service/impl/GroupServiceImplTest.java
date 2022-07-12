@@ -1,4 +1,4 @@
-package ru.b19513.pet_schedule.service;
+package ru.b19513.pet_schedule.service.impl;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,12 +9,15 @@ import ru.b19513.pet_schedule.repository.entity.enums.Gender;
 import ru.b19513.pet_schedule.controller.entity.*;
 import lombok.val;
 import org.junit.jupiter.api.Assertions;
+import ru.b19513.pet_schedule.service.GroupService;
+import ru.b19513.pet_schedule.service.UserService;
+
 import java.util.Set;
 import javax.transaction.Transactional;
 
 @SpringBootTest
 @Transactional
-class GroupServiceTest {
+class GroupServiceImplTest {
     @Autowired
     GroupService groupService;
     @Autowired
@@ -43,8 +46,8 @@ class GroupServiceTest {
         Assertions.assertEquals(g1.getName(), group.getName());
         Assertions.assertEquals(u1.getName(), group.getOwner().getName());
         Assertions.assertTrue(groupRepository.findById(group.getId()).get().getUsers().contains(u1));
-        userRepository.delete(user);
-        groupRepository.delete(group);
+        userRepository.deleteAll();
+        groupRepository.deleteAll();
     }
 
     @Test
@@ -72,8 +75,8 @@ class GroupServiceTest {
         groupService.updateGroup(u1, groupDTO);
         Assertions.assertEquals(groupDTO.getName(), groupRepository.findById(group.getId()).get().getName());
         Assertions.assertEquals(groupDTO.getDescription(), groupRepository.findById(group.getId()).get().getDescription());
-        userRepository.delete(u1);
-        groupRepository.delete(group);
+        userRepository.deleteAll();
+        groupRepository.deleteAll();
     }
 
     @Test
@@ -103,9 +106,8 @@ class GroupServiceTest {
         Assertions.assertEquals(1, userRepository.findById(user2.getId()).get().getGroups().size());
         Assertions.assertEquals(2, groupRepository.findById(group.getId()).get().getUsers().size());
         Assertions.assertEquals(Set.of(u1, u2), groupRepository.findById(group.getId()).get().getUsers());
-        groupRepository.delete(group);
-        userRepository.delete(user1);
-        userRepository.delete(user2);
+        userRepository.deleteAll();
+        groupRepository.deleteAll();
     }
 
     @Test
@@ -137,9 +139,8 @@ class GroupServiceTest {
         groupService.kickUser(u1, group.getId(), user2.getId());
         Assertions.assertEquals(1, groupRepository.findById(group.getId()).get().getUsers().size());
         Assertions.assertEquals(Set.of(u1), groupRepository.findById(group.getId()).get().getUsers());
-        userRepository.delete(u1);
-        userRepository.delete(u2);
-        groupRepository.delete(groupRepository.findById(group.getId()).get());
+        userRepository.deleteAll();
+        groupRepository.deleteAll();
     }
 
     @Test
@@ -156,10 +157,10 @@ class GroupServiceTest {
                 .owner(u1)
                 .build();
         userRepository.save(u1);
-        groupService.createGroup(u1, "g1");
-        groupService.deleteGroup(1L, u1);
-        Assertions.assertFalse(groupRepository.findById(1L).isPresent());
-        Assertions.assertNull(userRepository.findById(1L).get().getGroups());
-        userRepository.delete(u1);
+        var user = userRepository.findAll().get(0);
+        var groupDTO = groupService.createGroup(u1, "g1");
+        groupService.deleteGroup(groupDTO.getId(), user);
+        Assertions.assertFalse(groupRepository.findById(groupDTO.getId()).isPresent());
+        userRepository.delete(user);
     }
 }

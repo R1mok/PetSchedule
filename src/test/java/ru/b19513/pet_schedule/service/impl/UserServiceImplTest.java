@@ -1,4 +1,4 @@
-package ru.b19513.pet_schedule.service;
+package ru.b19513.pet_schedule.service.impl;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -11,6 +11,8 @@ import ru.b19513.pet_schedule.repository.GroupRepository;
 import ru.b19513.pet_schedule.repository.InvitationRepository;
 import ru.b19513.pet_schedule.repository.UserRepository;
 import ru.b19513.pet_schedule.repository.entity.User;
+import ru.b19513.pet_schedule.service.GroupService;
+import ru.b19513.pet_schedule.service.UserService;
 import ru.b19513.pet_schedule.service.mapper.GroupMapper;
 import ru.b19513.pet_schedule.service.mapper.UserMapper;
 
@@ -72,8 +74,8 @@ class UserServiceImplTest {
                 .userId(userInRepo2.getId())
                 .group(groupMapper.entityToDTO(group)).build(), oneInvitationOfUser.stream().findAny().get());
 
-        userRepository.deleteAll();
         groupRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
