@@ -161,7 +161,6 @@ class GroupServiceImplTest {
         var groupDTO = groupService.createGroup(u1, "g1");
         groupService.deleteGroup(groupDTO.getId(), user);
         Assertions.assertFalse(groupRepository.findById(groupDTO.getId()).isPresent());
-        Assertions.assertNull(userRepository.findById(groupDTO.getId()).get().getGroups());
         userRepository.delete(user);
     }
 }

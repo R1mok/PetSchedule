@@ -174,7 +174,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .orElseThrow(new NotFoundException("Notification with notification id " + notifId + " not found"));
         var group = notification.getGroup();
         group.getNotificationList().remove(notification);
-        var pet = petRepository.findById(notification.getId()).get();
+        var pet = notification.getPet();
         notificationRepository.delete(notification);
         pet.getNotifications().remove(notification);
         return StatusDTO.builder()
