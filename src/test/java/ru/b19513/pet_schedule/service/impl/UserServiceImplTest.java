@@ -74,8 +74,8 @@ class UserServiceImplTest {
                 .userId(userInRepo2.getId())
                 .group(groupMapper.entityToDTO(group)).build(), oneInvitationOfUser.stream().findAny().get());
 
-        userRepository.deleteAll();
         groupRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
