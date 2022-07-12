@@ -175,8 +175,8 @@ public class NotificationServiceImpl implements NotificationService {
         var group = notification.getGroup();
         group.getNotificationList().remove(notification);
         var pet = petRepository.findById(notification.getId()).get();
-        pet.getNotifications().remove(notification);
         notificationRepository.delete(notification);
+        pet.getNotifications().remove(notification);
         return StatusDTO.builder()
                 .status(HttpStatus.OK)
                 .description(NOTIFICATION_DELETED)

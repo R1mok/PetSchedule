@@ -157,10 +157,11 @@ class GroupServiceImplTest {
                 .owner(u1)
                 .build();
         userRepository.save(u1);
+        var user = userRepository.findAll().get(0);
         var groupDTO = groupService.createGroup(u1, "g1");
-        groupService.deleteGroup(groupDTO.getId(), u1);
+        groupService.deleteGroup(groupDTO.getId(), user);
         Assertions.assertFalse(groupRepository.findById(groupDTO.getId()).isPresent());
         Assertions.assertNull(userRepository.findById(groupDTO.getId()).get().getGroups());
-        userRepository.delete(u1);
+        userRepository.delete(user);
     }
 }
