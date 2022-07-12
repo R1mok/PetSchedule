@@ -46,8 +46,8 @@ class GroupServiceImplTest {
         Assertions.assertEquals(g1.getName(), group.getName());
         Assertions.assertEquals(u1.getName(), group.getOwner().getName());
         Assertions.assertTrue(groupRepository.findById(group.getId()).get().getUsers().contains(u1));
-        userRepository.delete(user);
-        groupRepository.delete(group);
+        userRepository.deleteAll();
+        groupRepository.deleteAll();
     }
 
     @Test
@@ -75,8 +75,8 @@ class GroupServiceImplTest {
         groupService.updateGroup(u1, groupDTO);
         Assertions.assertEquals(groupDTO.getName(), groupRepository.findById(group.getId()).get().getName());
         Assertions.assertEquals(groupDTO.getDescription(), groupRepository.findById(group.getId()).get().getDescription());
-        userRepository.delete(u1);
-        groupRepository.delete(group);
+        userRepository.deleteAll();
+        groupRepository.deleteAll();
     }
 
     @Test
@@ -106,9 +106,8 @@ class GroupServiceImplTest {
         Assertions.assertEquals(1, userRepository.findById(user2.getId()).get().getGroups().size());
         Assertions.assertEquals(2, groupRepository.findById(group.getId()).get().getUsers().size());
         Assertions.assertEquals(Set.of(u1, u2), groupRepository.findById(group.getId()).get().getUsers());
-        groupRepository.delete(group);
-        userRepository.delete(user1);
-        userRepository.delete(user2);
+        userRepository.deleteAll();
+        groupRepository.deleteAll();
     }
 
     @Test
@@ -140,9 +139,8 @@ class GroupServiceImplTest {
         groupService.kickUser(u1, group.getId(), user2.getId());
         Assertions.assertEquals(1, groupRepository.findById(group.getId()).get().getUsers().size());
         Assertions.assertEquals(Set.of(u1), groupRepository.findById(group.getId()).get().getUsers());
-        userRepository.delete(u1);
-        userRepository.delete(u2);
-        groupRepository.delete(groupRepository.findById(group.getId()).get());
+        userRepository.deleteAll();
+        groupRepository.deleteAll();
     }
 
     @Test

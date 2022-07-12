@@ -18,6 +18,7 @@ import ru.b19513.pet_schedule.service.mapper.GroupMapper;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static ru.b19513.pet_schedule.consts.Consts.*;
 
