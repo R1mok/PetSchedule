@@ -52,7 +52,7 @@ public class PetServiceImpl implements PetService {
     public PetDTO createPet(long groupId, String name, String description, Gender gender, PetType petType) {
         var group = groupRepository.findById(groupId).orElseThrow(new NotFoundException("Group with group id: " + groupId + " not found"));
         if (group.getPets() != null &&
-                group.getPets().stream().map(p -> p.getName().equals(name)).findAny().isEmpty()) {
+                group.getPets().stream().map(p -> p.getName().equals(name)).findAny().isPresent()) {
             throw new NameTakenException("Pet with name " + name + " already exist");
         }
         var pet = Pet.builder()

@@ -38,8 +38,8 @@ public class UsersController {
     }
 
     @Operation(summary = "Изменение данных пользователя")
-    @PatchMapping("/")
-    public ResponseEntity<UserDTO> updateUser(Authentication auth, @RequestParam UserDTO user) {
+    @PutMapping("/update")
+    public ResponseEntity<UserDTO> updateUser(Authentication auth, @RequestBody UserDTO user) {
         UserDTO userDTO = userService.updateUser((User) auth.getPrincipal(), user);
         return ResponseEntity.ok(userDTO);
     }

@@ -31,8 +31,8 @@ public class GroupsController {
     }
 
     @Operation(summary = "Обновление данных группы")
-    @PatchMapping("/")
-    public ResponseEntity<GroupDTO> update(Authentication auth, @RequestParam GroupDTO group) {
+    @PutMapping("/")
+    public ResponseEntity<GroupDTO> update(Authentication auth, @RequestBody GroupDTO group) {
         GroupDTO groupDTO = groupService.updateGroup((User) auth.getPrincipal(), group);
         return ResponseEntity.ok(groupDTO);
     }

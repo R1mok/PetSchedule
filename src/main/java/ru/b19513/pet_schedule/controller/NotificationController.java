@@ -48,7 +48,7 @@ public class NotificationController {
 
     @Operation(summary = "Изменить напоминание.")
     @PutMapping("/")
-    public ResponseEntity<NotificationDTO> updateNotification(@RequestParam NotificationDTO notif){
+    public ResponseEntity<NotificationDTO> updateNotification(@RequestBody NotificationDTO notif){
         NotificationDTO notificationDTO;
         if (notif instanceof NotificationTimeoutDTO){
             notificationDTO = notificationService.updateNotificationTimeout((NotificationTimeoutDTO) notif);
