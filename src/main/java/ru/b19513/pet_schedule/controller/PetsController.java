@@ -39,7 +39,7 @@ public class PetsController {
     }
 
     @Operation(summary = "Обновить сведения о питомце")
-    @PutMapping("/")
+    @PutMapping("/update")
     public ResponseEntity<PetDTO> updatePet(@RequestBody PetDTO petDTOInput) {
         PetDTO petDTO = petService.updatePet(petDTOInput);
         return ResponseEntity.ok(petDTO);

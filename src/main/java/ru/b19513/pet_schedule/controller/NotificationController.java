@@ -47,7 +47,7 @@ public class NotificationController {
     }
 
     @Operation(summary = "Изменить напоминание.")
-    @PutMapping("/")
+    @PutMapping("/update")
     public ResponseEntity<NotificationDTO> updateNotification(@RequestBody NotificationDTO notif){
         NotificationDTO notificationDTO;
         if (notif instanceof NotificationTimeoutDTO){
@@ -59,7 +59,7 @@ public class NotificationController {
     }
 
     @Operation(summary = "Показать напоминания.")
-    @GetMapping("/")
+    @GetMapping("/show")
     public ResponseEntity<List<NotificationDTO>> showNotification(Authentication auth){
         var user = ((User)auth.getDetails());
         var notificationList = notificationService.showNotification(user);
