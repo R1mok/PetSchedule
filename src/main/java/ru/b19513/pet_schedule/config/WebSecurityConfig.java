@@ -8,6 +8,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.util.matcher.AndRequestMatcher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import ru.b19513.pet_schedule.service.impl.UserSecurityService;
 
 @Configuration
@@ -27,8 +29,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/v3/api-docs/**",
             "/swagger-ui/**",
             // other public endpoints of your API may be appended to this array
-            "/users/checkLogin/**",
-            "/users/register/**",
+            "/user/checkLogin/**",
+            "/user/register/**",
     };
 
     private final UserSecurityService userSecurityService;
@@ -49,7 +51,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers(AUTH_WHITELIST).permitAll()
-                .antMatchers("/users/register").not().fullyAuthenticated()
+                .antMatchers("/user/register").not().fullyAuthenticated()
                 .anyRequest().authenticated()
                 .and().httpBasic();
     }

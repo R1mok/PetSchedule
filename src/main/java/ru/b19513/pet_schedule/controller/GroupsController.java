@@ -24,14 +24,14 @@ public class GroupsController {
     }
 
     @Operation(summary = "Создание новой группы")
-    @PostMapping("/")
+    @PostMapping("/create")
     public ResponseEntity<GroupDTO> create(Authentication auth, @RequestParam String name) {
         GroupDTO groupDTO = groupService.createGroup((User) auth.getPrincipal(), name);
         return ResponseEntity.ok(groupDTO);
     }
 
     @Operation(summary = "Обновление данных группы")
-    @PutMapping("/")
+    @PutMapping("/update")
     public ResponseEntity<GroupDTO> update(Authentication auth, @RequestBody GroupDTO group) {
         GroupDTO groupDTO = groupService.updateGroup((User) auth.getPrincipal(), group);
         return ResponseEntity.ok(groupDTO);

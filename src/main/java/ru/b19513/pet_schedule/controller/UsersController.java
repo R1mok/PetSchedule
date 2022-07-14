@@ -4,6 +4,7 @@ package ru.b19513.pet_schedule.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ import java.util.Collection;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/user")
 @Tag(name = "Users controller", description = "Контроллер пользователей")
 public class UsersController {
 
@@ -52,7 +53,7 @@ public class UsersController {
     }
 
     @Operation(summary = "Принять приглашение")
-    @PutMapping("/")
+    @PutMapping("/accept")
     public ResponseEntity<GroupDTO> acceptInvitation(Authentication auth, @RequestParam long groupId) {
         GroupDTO groupDTO = userService.acceptInvitation((User) auth.getPrincipal(), groupId);
         return ResponseEntity.ok(groupDTO);
@@ -66,7 +67,7 @@ public class UsersController {
     }
 
     @Operation(summary = "Получение данных пользователя")
-    @GetMapping("/")
+    @GetMapping("/info")
     public ResponseEntity<UserDTO> getUser(Authentication auth) {
         UserDTO userDTO = userService.getUser((User) auth.getPrincipal());
         return ResponseEntity.ok(userDTO);
