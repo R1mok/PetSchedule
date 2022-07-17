@@ -1,11 +1,4 @@
 spring:
-  security:
-    user:
-      name: admin
-      password: admin
-  h2:
-    console:
-      enabled: true
   datasource:
     url: jdbc:postgresql://localhost:5432/
     username: postgres
