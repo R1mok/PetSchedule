@@ -7,13 +7,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.b19513.pet_schedule.repository.UserRepository;
 
-@Service
-public class UserSecurityService implements UserDetailsService {
+@Service("userDetailsServiceImpl")
+public class userDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
 
     @Autowired
-    public UserSecurityService(UserRepository userRepository) {
+    public userDetailsServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
