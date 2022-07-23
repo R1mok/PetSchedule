@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/}
     username: postgres
     password: admin
     driverClassName: org.postgresql.Driver
@@ -17,3 +17,5 @@ jwt:
   header: authorization
   secret: secretKey
   expiration: 604800
+server:
+  port: ${PORT:8091}
