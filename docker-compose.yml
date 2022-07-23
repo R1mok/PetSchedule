@@ -1,17 +1,23 @@
-version: '3.1'
+version: '3.8'
 services:
-  db:
+  postgres:
     image: postgres
-    environment:
-      POSTGRES_PASSWORD: admin
     ports:
-      - 5432:5432
-    restart: always
-    network_mode: "host"
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=mydb
+      - POSTGRES_PASSWORD=admin
+    volumes:
+      - "db-data:/var/lib/postgresql/data"
   app:
     image: r1mok/pet-schedule
+    environment:
+      - PORT=8080
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres/mydb
     depends_on:
-      - db
+      - postgres
     ports:
-      - 8080:8080
-    network_mode: "host"
+      - "8091:8080"
+volumes:
+  db-data:
